@@ -14,16 +14,26 @@ class DashboardController extends Controller
 
     public function statistics()
     {
-        return view("dashboard.index", ["menu" => "statistics"]);
+        $members = DB::table("members")->get();
+
+        return view("dashboard.statistics", [
+            "menu" => "statistics",
+            "members" => $members,
+        ]);
     }
 
     public function userManagement()
     {
-        return view("dashboard.index", ["menu" => "userManagement"]);
+        $members = DB::table("members")->get();
+
+        return view("dashboard.userManagement", [
+            "menu" => "userManagement",
+            "members" => $members,
+        ]);
     }
 
     public function setting()
     {
-        return view("dashboard.index", ["menu" => "setting"]);
+        return view("dashboard.setting", ["menu" => "setting"]);
     }
 }
