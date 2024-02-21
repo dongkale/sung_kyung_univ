@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string("id_string")->unique();
             $table->string("name");
             $table->string("mobile_phone")->nullable();
+            $table->smallInteger("play")->nullable();
             $table->timestamps();
         });
     }

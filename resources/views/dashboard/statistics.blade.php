@@ -111,7 +111,6 @@ $(document).ready( function() {
     __testDrawApexChart4(document.querySelector('#apex_chart'));
 } );
 
-
 function viewMemberList() {
     $.ajax({
         url: '/api/memberList',
@@ -139,7 +138,6 @@ function viewMemberList() {
         }
     });
 }
-
 
 function __testDrawApexChart4(draw_id) {
     var options = {
