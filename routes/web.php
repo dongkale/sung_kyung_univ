@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,8 @@ use App\Http\Controllers\DashboardController;
 // Route::get('/dashboard', function () {
 //     return view('dashboard.index');
 // });
+
+Route::get("/test", [TestController::class, "test"]);
 
 Route::get("/", [DashboardController::class, "index"]);
 Route::get("/dashboard", [DashboardController::class, "index"]);

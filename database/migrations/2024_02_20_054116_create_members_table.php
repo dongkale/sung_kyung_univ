@@ -10,14 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("members", function (Blueprint $table) {
-            $table->id();
-            $table->string("id_string")->unique();
-            $table->string("name");
-            $table->string("mobile_phone")->nullable();
-            $table->smallInteger("play")->nullable();
-            $table->timestamps();
-        });
+        // Schema::create("members", function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string("ids")->unique();
+        //     $table->string("name")->nullable();
+        //     $table->string("sex")->nullable();
+        //     $table->string("birth_date")->nullable(); // YYYYMMDD
+        //     $table->string("mobile_phone")->nullable();
+        //     $table->smallInteger("login")->nullable(); // 로그인중 여부(0:로그아웃, 1:로그인중)
+        //     $table->timestamp("last_login_at")->nullable(); // 마지막 로그인 시간
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -25,8 +28,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("members", function (Blueprint $table) {
-            Schema::dropIfExists("members");
-        });
+        // Schema::table("members", function (Blueprint $table) {
+        //     Schema::dropIfExists("members");
+        // });
     }
 };

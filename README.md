@@ -43,3 +43,5 @@ Connect to `http://localhost:3000`
 -   ENV (or `DotENV`)
 -   PHP IntelliSense (not `PHP Intelephense`)
 -   PHP Debug (for `xdebug`)
+
+## DB Schema

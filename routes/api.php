@@ -21,3 +21,6 @@ Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
 });
 
 Route::get("/memberList", [MemberController::class, "memberList"]);
+
+Route::post("/addMember", [MemberController::class, "addMember"]);
+Route::post("/editMember", [MemberController::class, "editMember"]);
