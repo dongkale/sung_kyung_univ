@@ -4,6 +4,35 @@
 
 @section('content')
 
+<style>
+.tableHeaderFixed {
+    width: 100%;
+}
+.tableHeaderFixed thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;  
+}
+
+.tableHeaderFixed tbody tr td{
+    vertical-align: middle;
+}
+
+.table tr td {
+    align:center;
+    vertical-align: middle;
+}
+
+.tableHeaderFixed tbody {
+    display: block;
+    overflow-y: auto;
+    table-layout: fixed;  
+}
+.tableHeaderFixed tbody {
+    max-height: 300px;
+}
+</style>
+
 <!-- 대시보드 컨텐츠 -->
 <div class="row">
     <div class="col-md-12">
@@ -13,36 +42,31 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
+<div class="row" id="member-list">
+    <div class="col-md-12">
         <div class="card">
-            <div class="card-header" style="font-size:14px">사용자</div>
-            <div class="card-body">
-                <table class="table table-borderd"  id="member-list">
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">사용자</div>
+            </div>            
+            <div class="card-body">                
+                <div class="text-right float-right mb-2">                     
+                </div>
+                <table class="table table-borderd table-striped tableHeaderFixed">
                     <thead>
-                        <tr align="center">
+                        <tr align="center">                            
                             <th>ID</th>
                             <th>이름</th>
-                            <th>전화번호</th>
-                            <th>생성일</th>
+                            <th>성별</th>
+                            <th>휴대폰번호</th>
+                            <th>생년월일</th>
+                            <th>생성일</th>                            
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
-                </table>
+                </table>                
             </div>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card">
-            
-        </div>
-    </div>
 </div>
 
 {{-- <div class="row">
@@ -99,7 +123,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
- <script>
+<script type="text/javascript" src="{{asset('/js/util.js')}}"></script>
+
+<script>
 
 $(document).ready( function() {
     var menu = "{{$menu}}";
@@ -110,6 +136,14 @@ $(document).ready( function() {
 
     __testDrawApexChart4(document.querySelector('#apex_chart'));
 } );
+
+function reformatBirthDate(input) {
+    // YYYYDDMM 형식의 문자열을 YYYY-DD-MM 형식으로 변경
+    var year = input.substring(0, 4);
+    var day = input.substring(4, 6);
+    var month = input.substring(6, 8);
+    return year + '-' + day + '-' + month;
+}
 
 function viewMemberList() {
     $.ajax({
@@ -122,10 +156,12 @@ function viewMemberList() {
             $("#member-list").find("tbody").children().remove();
 
             for (let item of data) {                
-                html += `<tr align="center">`;
-                html += `   <td>${item.id_string}</td>`;
-                html += `   <td>${item.name}</td>`;
-                html += `   <td>${item.mobile_phone}</td>`;
+                html += `<tr align="center" style="vertical-align: middle;">`;
+                html += `   <td>${item.ids}</td>`;
+                html += `   <td>${item.name}</td>`;                
+                html += `   <td>${item.sex}</td>`;                
+                html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;
+                html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
                 html += `   <td>${item.created_at}</td>`;
                 html += `</tr>`;
             };

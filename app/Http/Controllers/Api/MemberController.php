@@ -33,12 +33,12 @@ class MemberController extends Controller
 
     public function memberList(Request $request)
     {
-        $select_data = DB::table("members")
+        $selectData = DB::table("members")
             ->select("*")
             ->get()
             ->toArray();
 
-        return response()->json($select_data);
+        return response()->json($selectData);
     }
 
     public function addMember(Request $request)
@@ -89,14 +89,6 @@ class MemberController extends Controller
             );
         }
 
-        // $addData = [
-        //     "name" => $memberName,
-        //     "email" => $memberEmail,
-        //     "sex" => $memberSex,
-        //     "birth_date" => $memberBirthDate,
-        //     "mobile_phone" => $memberMobilePhone,
-        // ];
-
         DB::beginTransaction();
         try {
             $insertId = DB::table("members")->insertGetId([
@@ -116,7 +108,7 @@ class MemberController extends Controller
             DB::commit();
 
             Log::info(
-                "[Member][Add] id: {$insertId}, Ids:{$ids}, Name:{$memberName}"
+                "[Member][Add] id: {$insertId}, Ids:{$ids}, Name: {$memberName}"
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -148,7 +140,7 @@ class MemberController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::error("[Member][Add] " . "Not Found Arguments");
+            Log::error("[Member][Edit] " . "Not Found Arguments");
             return view("errors.error", ["errors" => $validator->errors()]);
         }
 
@@ -203,7 +195,7 @@ class MemberController extends Controller
             DB::commit();
 
             Log::info(
-                "[Member][Edit] id: {$memberId}, Ids:{$memberIds}, Name:{$memberName}"
+                "[Member][Edit] id: {$memberId}, Ids:{$memberIds}, Name: {$memberName}"
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -221,6 +213,61 @@ class MemberController extends Controller
             "result_code" => 0,
             "result_message" => "success",
             "ids" => $memberIds,
+        ]);
+    }
+
+    public function deleteMember(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "idList" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            Log::error("[Member][Delete] " . "Not Found Arguments");
+            return view("errors.error", ["errors" => $validator->errors()]);
+        }
+
+        $memberIdList = $request->idList;
+        // $memberIds = $request->ids;
+
+        $selectData = DB::table("members")
+            ->select("*")
+            ->whereIn("id", $memberIdList)
+            ->get();
+
+        foreach ($selectData as $item) {
+            Log::info(
+                "[Member][Delete] id: {$item->id}, Ids:{$item->ids}, Name: {$item->name}, Sex: {$item->sex}, BirthDate: {$item->birth_date}, MobilePhone: {$item->mobile_phone}, Email: {$item->email}"
+            );
+        }
+
+        $memberIdListStr = implode(",", $memberIdList);
+
+        DB::beginTransaction();
+        try {
+            DB::table("members")
+                ->whereIn("id", $memberIdList)
+                ->delete();
+
+            DB::commit();
+
+            Log::info("[Member][Delete] id: {$memberIdListStr}");
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[Member][Delete] Exception: " . $e->getMessage());
+            Log::error("[Member][Delete] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "success",
+            "id_list" => $memberIdListStr,
         ]);
     }
 }
