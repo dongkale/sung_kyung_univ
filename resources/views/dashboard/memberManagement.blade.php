@@ -4,35 +4,6 @@
 
 @section('content')
 
-<style>
-.tableHeaderFixed {
-    width: 100%;
-}
-.tableHeaderFixed thead, tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;  
-}
-
-.tableHeaderFixed tbody tr td{
-    vertical-align: middle;
-}
-
-.table tr td {
-    align:center;
-    vertical-align: middle;
-}
-
-.tableHeaderFixed tbody {
-    display: block;
-    overflow-y: auto;
-    table-layout: fixed;  
-}
-.tableHeaderFixed tbody {
-    max-height: 400px;
-}
-</style>
-
 <div class="row" id="member-list">
     <div class="col-md-12">
         <div class="card">
@@ -298,8 +269,6 @@
         </div>
     </div>
 </div> --}}
-
-<script type="text/javascript" src="{{asset('/js/util.js')}}"></script>
 
 <script>
 

@@ -24,6 +24,11 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Style CSS -->
+    <link href="{{ mix('/css/styles.css') }}" rel="stylesheet">
+
+    <script type="text/javascript" src="{{mix('/js/util.js')}}"></script>
+
     <style>
         .row.content {height: 550px}
         .sidebar {

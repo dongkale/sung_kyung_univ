@@ -9,6 +9,7 @@ CREATE TABLE `members` (
     `sex` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '1:남성, 0:여성',
     `birth_date` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '생년월일(YYYYMMDD)',
     `mobile_phone` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '휴대폰번호',
+    `play_seq_no` bigint unsigned DEFAULT '0' COMMENT '사용자 플레이 순서값',
     `login_flag` tinyint(1) DEFAULT '0' COMMENT '로그인 여부(1:로그인중, 0: 미로그인)',
     `last_login_at` datetime DEFAULT NULL COMMENT '마지막 로그인 날짜',
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -25,3 +26,43 @@ CREATE TABLE `members` (
 --     `updated_at` timestamp NULL DEFAULT NULL,
 --     PRIMARY KEY (`id`)
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- plays
+
+CREATE TABLE `plays` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `member_id` bigint unsigned NOT NULL,
+    `seq_no` bigint unsigned NOT NULL,
+
+    `ground` varchar(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '장소',
+    `step` bigint unsigned NOT NULL DEFAULT 0 COMMENT '스텝',  	
+    `actual_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
+    `false_count` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실패 횟수',  	
+    `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
+    `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
+
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    
+    PRIMARY KEY (`id`),    
+    INDEX `IX_plays_member_id`(`member_id`) USING BTREE,
+    INDEX `IX_plays_seq_no`(`seq_no`) USING BTREE,
+    INDEX `IX_plays_ground`(`ground`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- play_logs
+CREATE TABLE `play_logs` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `member_id` bigint unsigned NOT NULL,
+    `seq_no` bigint unsigned NOT NULL,
+
+    `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
+    `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
+    `total_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
+    
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    PRIMARY KEY (`id`),    
+    INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
+    INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

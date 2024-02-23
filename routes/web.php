@@ -30,9 +30,13 @@ Route::get("/test", [TestController::class, "test"]);
 Route::get("/", [DashboardController::class, "index"]);
 Route::get("/dashboard", [DashboardController::class, "index"]);
 Route::get("/dashboard/statistics", [DashboardController::class, "statistics"]);
-Route::get("/dashboard/userManagement", [
+Route::get("/dashboard/memberManagement", [
     DashboardController::class,
-    "userManagement",
+    "memberManagement",
+]);
+Route::get("/dashboard/playManagement", [
+    DashboardController::class,
+    "playManagement",
 ]);
 Route::get("/dashboard/setting", [DashboardController::class, "setting"]);
 

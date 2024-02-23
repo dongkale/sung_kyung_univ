@@ -14,7 +14,6 @@ use App\Utils\CommonUtils;
 use stdClass;
 use DateTime;
 use DateInterval;
-// use Log;
 use Exception;
 
 class MemberController extends Controller
@@ -33,8 +32,23 @@ class MemberController extends Controller
 
     public function memberList(Request $request)
     {
+        $dbEncKey = env("DB_ENCRYPT_KEY");
+
         $selectData = DB::table("members")
-            ->select("*")
+            ->select(
+                "id",
+                "ids",
+                DB::raw("AES_DECRYPT(UNHEX(email), '{$dbEncKey}') as email"),
+                "name",
+                "sex",
+                "birth_date",
+                DB::raw(
+                    "AES_DECRYPT(UNHEX(mobile_phone), '{$dbEncKey}') as mobile_phone"
+                ),
+                "login_flag",
+                "last_login_at",
+                "created_at"
+            )
             ->get()
             ->toArray();
 
@@ -55,6 +69,8 @@ class MemberController extends Controller
             Log::error("[Member][Add] " . "Not Found Arguments");
             return view("errors.error", ["errors" => $validator->errors()]);
         }
+
+        $dbEncKey = env("DB_ENCRYPT_KEY");
 
         $memberName = $request->name;
         $memberEmail = $request->email;
@@ -93,10 +109,14 @@ class MemberController extends Controller
         try {
             $insertId = DB::table("members")->insertGetId([
                 "name" => $memberName,
-                "email" => $memberEmail,
+                "email" => DB::raw(
+                    "HEX(AES_ENCRYPT('{$memberEmail}', '{$dbEncKey}'))"
+                ),
                 "sex" => $memberSex,
                 "birth_date" => $memberBirthDate,
-                "mobile_phone" => $memberMobilePhone,
+                "mobile_phone" => DB::raw(
+                    "HEX(AES_ENCRYPT('{$memberMobilePhone}', '{$dbEncKey}'))"
+                ),
             ]);
 
             $ids = $this->makeIds($insertId);
@@ -144,6 +164,8 @@ class MemberController extends Controller
             return view("errors.error", ["errors" => $validator->errors()]);
         }
 
+        $dbEncKey = env("DB_ENCRYPT_KEY");
+
         $memberId = $request->id;
         $memberIds = $request->ids;
         $memberName = $request->name;
@@ -186,10 +208,14 @@ class MemberController extends Controller
                 ->where("ids", "=", $memberIds)
                 ->update([
                     "name" => $memberName,
-                    "email" => $memberEmail,
+                    "email" => DB::raw(
+                        "HEX(AES_ENCRYPT('{$memberEmail}', '{$dbEncKey}'))"
+                    ),
                     "sex" => $memberSex,
                     "birth_date" => $memberBirthDate,
-                    "mobile_phone" => $memberMobilePhone,
+                    "mobile_phone" => DB::raw(
+                        "HEX(AES_ENCRYPT('{$memberMobilePhone}', '{$dbEncKey}'))"
+                    ),
                 ]);
 
             DB::commit();

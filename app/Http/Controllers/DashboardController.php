@@ -27,12 +27,22 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function userManagement()
+    public function memberManagement()
     {
         $members = DB::table("members")->get();
 
-        return view("dashboard.userManagement", [
+        return view("dashboard.memberManagement", [
             "menu" => "userManagement",
+            "members" => $members,
+        ]);
+    }
+
+    public function playManagement()
+    {
+        $members = DB::table("plays")->get();
+
+        return view("dashboard.playManagement", [
+            "menu" => "playManagement",
             "members" => $members,
         ]);
     }
