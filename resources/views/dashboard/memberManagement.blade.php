@@ -34,7 +34,7 @@
                             </th>
                             <th width="10%">ID</th>
                             <th>이름</th>
-                            <th width="8%">성별</th>                            
+                            <th width="8%">성별</th> 
                             <th>생년월일</th>
                             <th>휴대폰번호</th>
                             <th>생성일</th>

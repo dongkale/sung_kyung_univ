@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\MemberController;
+use App\Http\Controllers\Api\PlayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +26,6 @@ Route::get("/memberList", [MemberController::class, "memberList"]);
 Route::post("/addMember", [MemberController::class, "addMember"]);
 Route::post("/editMember", [MemberController::class, "editMember"]);
 Route::post("/deleteMember", [MemberController::class, "deleteMember"]);
+
+Route::get("/playList", [PlayController::class, "playList"]);
+Route::get("/playDetail", [PlayController::class, "playDetail"]);

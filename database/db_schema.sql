@@ -31,38 +31,55 @@ CREATE TABLE `members` (
 
 CREATE TABLE `plays` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-    `member_id` bigint unsigned NOT NULL,
-    `seq_no` bigint unsigned NOT NULL,
 
-    `ground` varchar(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '장소',
-    `step` bigint unsigned NOT NULL DEFAULT 0 COMMENT '스텝',  	
-    `actual_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
-    `false_count` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실패 횟수',  	
-    `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
-    `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
+    `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
+    `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
+
+    `start_date` timestamp NULL DEFAULT NULL COMMENT '전체 시작 시간',
+    `end_date` timestamp NULL DEFAULT NULL COMMENT '전체 종료 시간',
+    `total_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '전체 플레이 시간',    
 
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NULL DEFAULT NULL,
     
     PRIMARY KEY (`id`),    
-    INDEX `IX_plays_member_id`(`member_id`) USING BTREE,
-    INDEX `IX_plays_seq_no`(`seq_no`) USING BTREE,
-    INDEX `IX_plays_ground`(`ground`) USING BTREE
+    UNIQUE INDEX `UIX_plays_member_id_seq_no`(`member_id`, `seq_no`) USING BTREE,  
+    INDEX `IX_plays_seq_no`(`seq_no`) USING BTREE    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `play_details` (    
+    `play_id` bigint unsigned NOT NULL,    
+    
+    `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
+    `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
+    
+    `ground` varchar(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '장소',
+    `step` bigint unsigned NOT NULL DEFAULT 0 COMMENT '스텝',  	
+    `actual_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
+    `false_count` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실패 횟수',  	
+    `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
+    `end_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
+
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    
+    INDEX `IX_play_details_play_id_member_id_seq_no`(`play_id`, `member_id`, `seq_no`) USING BTREE,    
+    INDEX `IX_play_details_ground`(`ground`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- play_logs
-CREATE TABLE `play_logs` (
-    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-    `member_id` bigint unsigned NOT NULL,
-    `seq_no` bigint unsigned NOT NULL,
+-- CREATE TABLE `play_logs` (
+--     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+--     `member_id` bigint unsigned NOT NULL,
+--     `seq_no` bigint unsigned NOT NULL,
 
-    `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
-    `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
-    `total_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
+--     `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
+--     `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
+--     `total_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
     
-    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+--     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     
-    PRIMARY KEY (`id`),    
-    INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
-    INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--     PRIMARY KEY (`id`),    
+--     INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
+--     INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

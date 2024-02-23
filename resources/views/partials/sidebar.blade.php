@@ -1,7 +1,7 @@
 <nav class="col-md-2 d-none d-md-block bg-light sidebar d-none py-4"> 
     <div class="sidebar-sticky list-group ">
     {{-- <div class="col-sm-2 sidenav d-none d-sm-block sidebar py-4"> --}}
-        <h2><a href="{{ url('/dashboard') }}">LENNON</a></h2>
+        <h2><a href="{{ url('/dashboard') }}">BIBLE UNIVERSITY</a></h2>
         <ul class="nav flex-column nav-pills nav-stacked list-group">            
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('/dashboard') }}" data-menu="dashboard">홈
