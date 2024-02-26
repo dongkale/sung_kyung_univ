@@ -156,6 +156,7 @@ class PlayController extends Controller
     /**
      * @OA\Post (
      *     path="/api/playLogin",
+     *     summary="로그인 API",
      *     tags={"로그인"},
      *     description="로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
      *     @OA\Parameter(
@@ -242,6 +243,7 @@ class PlayController extends Controller
             ]);
         }
 
+        // login 시도 시간 남겨서 playStart 에서 체크한다
         DB::table("members")
             ->where("ids", "=", $memberIds)
             ->where("name", "=", $memberName)
@@ -268,10 +270,10 @@ class PlayController extends Controller
     {
         // 1. request: id
         // 2. process: members.try_login_at 시간이 5초 안쪽인지 체크
-        // 2. process: members.login_flag, members.last_login_at 업데이트
-        // 3. process: members.play_seq_no 번호 증감
-        // 4. process: plays 테이블 insert
-        // 5. response: play_seq_no
+        // 3. process: members.login_flag, members.last_login_at 업데이트
+        // 4. process: members.play_seq_no 번호 증감
+        // 5. process: plays 테이블 insert
+        // 6. response: play_seq_no
         $validator = Validator::make($request->all(), [
             "id" => "required",
         ]);
@@ -302,10 +304,38 @@ class PlayController extends Controller
 
         Log::Info("==> {$selectData->name}");
 
+        DB::beginTransaction();
+        try {
+            // 3. process: members.login_flag, members.last_login_at 업데이트
+            // 4. process: members.play_seq_no 번호 증감
+            // 5. process: plays 테이블 insert
+            // 6. response: play_seq_no
+
+            DB::commit();
+
+            Log::info(
+                "[PlayStart] id: {$memberId}, ground:{$selectData->ground}, step: {$selectData->step}, false_count: {$selectData->false_count}, start_date: {$selectData->start_date}, end_date: {$selectData->end_date}"
+            );
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[PlayStart] Exception: " . $e->getMessage());
+            Log::error("[PlayStart] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
         // $memberIds = $request->ids;
         // $memberName = $request->name;
 
-        return response()->json([]);
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "success",
+            "id" => $memberId,
+        ]);
     }
 
     public function playStatistics(Request $request)

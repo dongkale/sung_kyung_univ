@@ -175,13 +175,14 @@
                 }
             }
         },
-        "/api/login": {
+        "/api/playLogin": {
             "post": {
                 "tags": [
                     "로그인"
                 ],
+                "summary": "로그인 API",
                 "description": "로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
-                "operationId": "9795535c9faf99f6e1120299cdbf4264",
+                "operationId": "b1dad4ee382560a02e12b8dee5a65edf",
                 "parameters": [
                     {
                         "name": "ids",
