@@ -11,6 +11,7 @@ CREATE TABLE `members` (
     `mobile_phone` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '휴대폰번호',
     `play_seq_no` bigint unsigned DEFAULT '0' COMMENT '사용자 플레이 순서값',
     `login_flag` tinyint(1) DEFAULT '0' COMMENT '로그인 여부(1:로그인중, 0: 미로그인)',
+    `try_login_at` datetime DEFAULT NULL COMMENT '로그인 시도 날짜',
     `last_login_at` datetime DEFAULT NULL COMMENT '마지막 로그인 날짜',
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NULL DEFAULT NULL,
@@ -63,7 +64,7 @@ CREATE TABLE `play_details` (
     `updated_at` timestamp NULL DEFAULT NULL,
     
     PRIMARY KEY (`id`),    
-    INDEX `IX_play_details_play_id_member_id_seq_no`(`play_id`) USING BTREE,    
+    INDEX `IX_play_details_play_id`(`play_id`) USING BTREE,    
     INDEX `IX_play_details_ground`(`ground`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

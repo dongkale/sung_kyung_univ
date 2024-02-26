@@ -24,6 +24,8 @@ use Exception;
  */
 class PlayController extends Controller
 {
+    const LOGIN_PLAY_START_GAP_TIME = 60;
+
     // tags : 메인 타이틀
     // description: API 설명
     /**
@@ -153,7 +155,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/login",
+     *     path="/api/playLogin",
      *     tags={"로그인"},
      *     description="로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
      *     @OA\Parameter(
@@ -240,6 +242,13 @@ class PlayController extends Controller
             ]);
         }
 
+        DB::table("members")
+            ->where("ids", "=", $memberIds)
+            ->where("name", "=", $memberName)
+            ->update([
+                "try_login_at" => DB::raw("NOW()"),
+            ]);
+
         $resposeData = [
             "id" => $selectData->id,
             "ids" => $selectData->ids,
@@ -257,11 +266,44 @@ class PlayController extends Controller
 
     public function playStart(Request $request)
     {
-        // 1. request: ids
+        // 1. request: id
+        // 2. process: members.try_login_at 시간이 5초 안쪽인지 체크
         // 2. process: members.login_flag, members.last_login_at 업데이트
         // 3. process: members.play_seq_no 번호 증감
         // 4. process: plays 테이블 insert
         // 5. response: play_seq_no
+        $validator = Validator::make($request->all(), [
+            "id" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
+        }
+
+        $memberId = $request->id;
+
+        $loginGapTime = self::LOGIN_PLAY_START_GAP_TIME;
+
+        $selectData = DB::table("members")
+            ->where("id", "=", $memberId)
+            ->whereRaw(
+                "TIMESTAMPDIFF(SECOND, try_login_at , NOW()) < {$loginGapTime}"
+            )
+            ->first();
+        if (empty($selectData)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "is not login",
+            ]);
+        }
+
+        Log::Info("==> {$selectData->name}");
+
+        // $memberIds = $request->ids;
+        // $memberName = $request->name;
 
         return response()->json([]);
     }
@@ -360,7 +402,10 @@ class PlayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json(
+                ["result_code" => -1, "result_message" => $validator->errors()],
+                500
+            );
         }
 
         $id = $request->id;
@@ -398,6 +443,56 @@ class PlayController extends Controller
             Log::error("[PlayDetail][Edit] Exception: " . $e->getMessage());
             Log::error(
                 "[PlayDetail][Edit] Callstack:" . $e->getTraceAsString()
+            );
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "success",
+            "id" => $id,
+        ]);
+    }
+
+    public function deletePlayDetail(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "id" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(
+                ["result_code" => -1, "result_message" => $validator->errors()],
+                500
+            );
+        }
+
+        $id = $request->id;
+
+        $selectData = DB::table("play_details")
+            ->where("id", "=", $id)
+            ->first();
+
+        DB::beginTransaction();
+        try {
+            DB::table("play_details")
+                ->where("id", "=", $id)
+                ->delete();
+            DB::commit();
+
+            Log::info(
+                "[PlayDetail][Delete] id: {$id}, ground:{$selectData->ground}, step: {$selectData->step}, false_count: {$selectData->false_count}, start_date: {$selectData->start_date}, end_date: {$selectData->end_date}"
+            );
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[PlayDetail][Delete] Exception: " . $e->getMessage());
+            Log::error(
+                "[PlayDetail][Delete] Callstack:" . $e->getTraceAsString()
             );
 
             return response()->json(
