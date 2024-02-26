@@ -16,8 +16,67 @@ use DateTime;
 use DateInterval;
 use Exception;
 
+/**
+ * @OA\Info(
+ *     title="BIBLE UNIVERSITY", version="0.1", description="Play API Documentation"
+ * ),
+ * @OA\PathItem(path="/api")
+ */
 class PlayController extends Controller
 {
+    /**
+     * @OA\Get (
+     *     path="/api/test",
+     *     tags={"API 테스트"},
+     *     summary="API 테스트",
+     *     description="API 테스트",
+     *     @OA\Parameter(
+     *         description="요청값",
+     *         in="query",
+     *         name="param",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="1", summary="paramter"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="요청값들",
+     *         in="query",
+     *         name="params",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="[1,2,3]", summary="paramters"),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="결과값",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result", type="string", example="success"),
+     *             @OA\Property(property="param", type="string", example="1"),
+     *             @OA\Property(property="params", type="string", example="[1,2,3]")
+     *         )
+     *     )
+     * )
+     */
+    public function test(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "param" => "required",
+            "params" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            return view("errors.error", ["errors" => $validator->errors()]);
+        }
+
+        $param = $request->param;
+        $params = $request->params;
+
+        return response()->json([
+            "result" => "success",
+            "result_data" => ["param" => $param, "params" => $params],
+        ]);
+    }
+
     public function login(Request $request)
     {
         // 1. request: ids, name 으로 로그인

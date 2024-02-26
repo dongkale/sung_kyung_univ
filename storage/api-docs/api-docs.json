@@ -1,0 +1,79 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "BIBLE UNIVERSITY",
+        "description": "Play API Documentation",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api": {},
+        "/api/test": {
+            "get": {
+                "tags": [
+                    "API 테스트"
+                ],
+                "summary": "API 테스트",
+                "description": "API 테스트",
+                "operationId": "3f49eb50f1b2e91cb1fabbaf598b1422",
+                "parameters": [
+                    {
+                        "name": "param",
+                        "in": "query",
+                        "description": "요청값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "paramter",
+                                "value": "1"
+                            }
+                        }
+                    },
+                    {
+                        "name": "params",
+                        "in": "query",
+                        "description": "요청값들",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "paramters",
+                                "value": "[1,2,3]"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "param": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "params": {
+                                            "type": "string",
+                                            "example": "[1,2,3]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
