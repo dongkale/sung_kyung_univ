@@ -79,24 +79,46 @@
             </button>
         </div>
         <div class="modal-body">
+            <input type="hidden" id="play-id" value="" />
+            <input type="hidden" id="member-id" value="" />
+            <input type="hidden" id="member-name" value="" />
+            <input type="hidden" id="play-seq-no" value="" />
+
+            <input type="hidden" id="play-detail-id" value="" />
+            
             <div class="form-group">
-                <label> Name: </label>
-                <input type="text" class="form-control" placeholder="Enter Name">
+                <label> 장소 </label>
+                <input type="text"  id="play-detail-ground" class="form-control" placeholder="장소">
             </div>
             <div class="form-group">
-                <label> Email: </label>
-                <input type="email" class="form-control" placeholder="Enter Email Id">
+                <label> 순서 </label>
+                <input type="number" id="play-detail-step" class="form-control" value="" min="1" max="100"/>
             </div>
             <div class="form-group">
-                <label> Contact Number: </label>
-                <input type="text" class="form-control" placeholder="Enter contact number">
+                <label> 시작 시간 </label>
+                <input type="datetime-local"
+                       id="play-detail-start-date"
+                       class="form-control"
+                       value=""
+                       onChange="onChangeStartDate(this)"/>
             </div>           
+            <div class="form-group">
+                <label> 종료 시간 </label>
+                <input type="datetime-local"
+                       id="play-detail-end-date"
+                       class="form-control"
+                       value=""
+                       onChange="onChangeEndDate(this)"/>
+            </div>
+            <div class="form-group">
+                <label> 실패 횟수 </label>                
+                <input type="number" id="play-detail-false-count" class="form-control" value="" min="1" max="100"/>
+            </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary">수정</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">종료</button>            
-        </div>
-        </div>
+            <button type="button" class="btn btn-primary" onClick="clickSubmitPlayDetail()" >수정</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>            
+        </div>        
     </div>
 </div>
 
@@ -130,17 +152,17 @@ function viewPlayList() {
             $("#play-list").find("tbody").children().remove();
 
             for (let item of data) {                
-                html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class" id="tr_${item.ids}_${item.seq_no}">`;
-                html += `   <td width="7%">${item.ids}</td>`;
-                html += `   <td>${item.name}</td>`;                
-                html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;                
-                html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
-                html += `   <td>${item.seq_no}</td>`;
-                html += `   <td>${item.start_date}</td>`;
-                html += `   <td>${item.end_date}</td>`;
-                html += `   <td>${item.total_time} sec</td>`;                
-                html += `   <td>${item.created_at}</td>`;
-                html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickPlayDetail('${item.id}', '${item.ids}', '${item.name}', '${item.seq_no}')">자세히</button></td>;`
+                html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class" id="tr_${item.p_id}">`;
+                html += `   <td width="7%">${item.m_ids}</td>`;
+                html += `   <td>${item.m_name}</td>`;                
+                html += `   <td width="8%">${(item.m_sex == 'M') ? '남성' : '여성'}</td>`;                
+                html += `   <td>${reformatBirthDate(item.m_birth_date)}</td>`;
+                html += `   <td>${item.p_seq_no}</td>`;
+                html += `   <td>${item.p_start_date}</td>`;
+                html += `   <td>${item.p_end_date}</td>`;
+                html += `   <td>${item.p_total_time} sec</td>`;                
+                html += `   <td>${item.p_created_at}</td>`;
+                html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
                 html += `</tr>`;
             };
 
@@ -153,14 +175,13 @@ function viewPlayList() {
     });
 }
 
-function viewPlayDetail(id, ids, name, play_seq_no) {
+function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
     $.ajax({
         url: '/api/playDetail',
         type: 'GET',
         dataType: 'json',  
         data: {
-            "id": id,
-            "play_seq_no": play_seq_no
+            "play_id": playId
         },      
         success: function(data) {            
             var html = '';            
@@ -169,17 +190,20 @@ function viewPlayDetail(id, ids, name, play_seq_no) {
 
             for (let item of data) {                
                 html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;                
-                html += `   <td width="7%">${ids}</td>`;
-                html += `   <td>${name}</td>`;
-                html += `   <td>${play_seq_no}</td>`;
+                html += `   <td width="7%">${memberIds}</td>`;
+                html += `   <td>${memberName}</td>`;
+                html += `   <td>${playSeqNo}</td>`;
                 html += `   <td>${item.ground}</td>`;
                 html += `   <td>${item.step}</td>`;
                 html += `   <td>${item.actual_play_time} sec</td>`;
                 html += `   <td>${item.start_date}</td>`;
                 html += `   <td>${item.end_date}</td>`;
                 html += `   <td>${item.false_count}</td>`; 
-                // html += `   <td><button type="button" class="btn btn-danger mt-2" onclick="clickEditPlayDetail('${item.id}', '${item.ids}', '${item.name}', '${item.seq_no}')">수정1</button></td>;`        
-                html += `   <td><button type="button" class="btn btn-danger mt-2" data-toggle="modal" data-target="#editPlayDetailModal">수정</button></td>;`        
+                html += `   <td><button type="button"`; 
+                html += `               class="btn btn-danger mt-2"`;
+                html += `               data-toggle="modal"`;
+                html += `               data-target="#editPlayDetailModal"`; 
+                html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button></td>;`;
                 html += `</tr>`;
             };
 
@@ -192,190 +216,85 @@ function viewPlayDetail(id, ids, name, play_seq_no) {
     });
 }
 
-
-function clickPlayDetail(id, ids, name, play_seq_no) {    
+function clickPlayDetail(playId, memberIds, memberName, playSeqNo) {    
     $("#play-detail").show();    
 
     //$(`#tr_${ids}_${play_seq_no}`).css('background', 'lightgrey !important');
+    // $(`#tr_${ids}_${play_seq_no}`).css('background', 'lightgrey !important');
 
-    $(`#tr_${ids}_${play_seq_no}`).css('background', 'lightgrey !important');
-
-    viewPlayDetail(ids, ids, name, play_seq_no);
+    viewPlayDetail(playId, memberIds, memberName, playSeqNo);
 }
 
-// $("#all-checker-member-list").on("change", function(e) {
-//     const is_checked = e.target.checked;
-//     $("input[name='member-list-items']").prop("checked", is_checked);
-// });
-
-// function clickAddMember() {
-//     if ($("#save-member").css("display") !== "none") { 
-//         alert("수정창을 닫고 입력해주세요.");        
-//         return;
-//     }    
+function clickEditPlayDetail(playId, memberIds, memberName, playSeqNo, playDetailId, playDetailGround, playDetailStep, playDetailStartDate, playDetailEndDate, playDetailFalseCount) {    
+    $("#play-id").val(playId);
+    $("#member-id").val(memberIds);
+    $("#member-name").val(memberName);
+    $("#play-seq-no").val(playSeqNo);
     
-//     $("#save-member-title").text('사용자 추가');
-//     $("#save-member-mode").val(SAVE_MODE_ADD);
-
-//     $("#member-id").val('0');
-//     $("#member-ids").val('000');
+    $("#play-detail-id").val(playDetailId);
     
-//     $("#member-name").val('');
-//     $("#member-mobile-phone").val('');
-//     $("#member-birth-date").val('');    
+    $("#play-detail-ground").val(playDetailGround);
+    $("#play-detail-step").val(playDetailStep);
+    $("#play-detail-start-date").val(playDetailStartDate);
+    $("#play-detail-end-date").val(playDetailEndDate);
+    $("#play-detail-false-count").val(playDetailFalseCount);
+}
 
-//     $("#save-member").show(); 
-// }
+function clickSubmitPlayDetail() {
+    $('#editPlayDetailModal').trigger('click.dismiss.bs.modal')
 
-// function clickEditMember(id, ids, name, mobilePhone, birthDate, sex) {
-//     if ($("#save-member-mode").val() === SAVE_MODE_ADD &&
-//         $("#save-member").css("display") !== "none") { 
-//         alert("추가창을 닫고 입력해주세요.");        
-//         return;
-//     }
+    console.log("clickSubmitPlayDetail");
     
-//     $("#save-member-title").text('사용자 수정');
-//     $("#save-member-mode").val(SAVE_MODE_EDIT);    
+    var playId = $("#play-id").val();
+    var memberIds = $("#member-id").val();
+    var memberName = $("#member-name").val();
+    var playSeqNo = $("#play-seq-no").val();
+
+    var playDetailId = $("#play-detail-id").val();
+
+    var playDetailGround = $("#play-detail-ground").val();
+    var playDetailStep = $("#play-detail-step").val();
+    var playDetailStartDate = $("#play-detail-start-date").val();
+    var playDetailEndDate = $("#play-detail-end-date").val();
+    var playDetailFalseCount = $("#play-detail-false-count").val();
+
+    var startDate = new Date(playDetailStartDate);
+    var endDate   = new Date(playDetailEndDate);
+    var actualPlayTime = (endDate.getTime() - startDate.getTime()) / 1000;
+
+    console.log(actualPlayTime);
+
+    callAPI({
+        method: 'POST',
+        url: "/api/editPlayDetail",
+        data: {
+            "id": playDetailId,
+            "ground": playDetailGround,
+            "step": playDetailStep,
+            "start_date": playDetailStartDate,
+            "end_date": playDetailEndDate,
+            "false_count": playDetailFalseCount,
+            "actual_play_time" : actualPlayTime
+        }
+    }).then(function (response) {
+        alert(`수정 되었습니다.`);
+    }).catch(function (error) {
+        console.log(error);
+        alert(`수정에 실패하였습니다.`)
+    }).finally(function () {
+        viewPlayDetail(playId, memberIds, memberName, playSeqNo);
+    })
+}
+
+function onChangeStartDate(t) {
+
+    return;
+}
+
+function onChangeEndDate(t) {
     
-//     $("#member-id").val(id);
-//     $("#member-ids").val(ids);
-    
-//     $("#member-name").val(name);
-//     $("#member-mobile-phone").val(mobilePhone);
-//     $("#member-birth-date").val(birthDate);
-    
-//     if (sex.toUpperCase() === "M") {
-//         $('#member-male').prop('checked', true) 
-//         $('#member-female').prop('checked', false) 
-//     } else {
-//         $('#member-male').prop('checked', false) 
-//         $('#member-female').prop('checked', true) 
-//     }
-
-//     $("#save-member").show();    
-// }
-
-// function clickDeleteMember() {
-//     var deleteList = [];
-//     $("input[name='member-list-items']").each(function(index, item){
-//         if ($(item).prop("checked")) {
-//             const idString = $(item).val();
-//             console.log(idString);   
-
-//             deleteList.push(idString);
-//         }
-//     });
-
-//     if (deleteList.length === 0) {
-//         alert("삭제할 사용자를 선택해주세요.");
-//         return;
-//     }
-
-//     console.log(deleteList);
-
-//     callAPI({
-//         method: 'POST',
-//         url: "/api/deleteMember",
-//         data: {
-//             "idList": deleteList
-//         }
-//     }).then(function (response) {
-//         alert(`삭제 되었습니다.`);
-//     }).catch(function (error) {
-//         console.log(error);
-//         alert(`삭제에 실패하였습니다.`)
-//     }).finally(function () {
-//         viewMemberList();        
-//     })
-// }
-
-// function validateMemberData() {
-//     var name = $.trim($("#member-name").val());
-//     if (name === "") {
-//         alert("이름을 입력해주세요.");
-//         $("#member-name").focus();
-//         return false;
-//     }
-
-//     var mobilePhone = $.trim($("#member-mobile-phone").val());
-//     if (mobilePhone === "") {
-//         alert("휴대폰번호을 입력해주세요.");
-//         $("#member-mobile-phone").focus();
-//         return false;
-//     }
-
-//     if (!isValidPhoneNumber(mobilePhone)) {
-//         alert("지정한 형식의 휴대폰번호을 입력해주세요.('-' 제외)");
-//         $("#member-mobile-phone").focus();
-//         return false;
-//     }
-
-//     var birthDate = $.trim($("#member-birth-date").val());
-//     if (birthDate === "") {
-//         alert("생년월일을 입력해주세요.(YYYYMMDD 형식)");
-//         $("#member-birth-date").focus();
-//         return false;
-//     }
-
-//     if (!isValidDateOfBirth(birthDate)) {
-//         alert("지정한 형식의 생년월일을 입력해주세요.(YYYYMMDD 형식)");
-//         $("#member-birth-date").focus();
-//         return false;
-//     }
-
-//     var gender = $('input[name="gender"]:checked').val();
-//     if (!gender) {
-//         alert("성별을 선택해주세요.");        
-//         return false;
-//     }
-
-//     return true;
-// }
-
-// function clickSaveMember() {
-//     if (!validateMemberData()) {
-//         return;
-//     }
-
-//     var id = $.trim($("#member-id").val());
-//     var ids = $.trim($("#member-ids").val());
-
-//     var name = $.trim($("#member-name").val());
-//     var email = "test@test.com";
-//     var mobilePhone = $.trim($("#member-mobile-phone").val());
-//     var birthDate = $.trim($("#member-birth-date").val());
-//     var gender = $('input[name="gender"]:checked').val();
-
-//     var url = ($("#save-member-mode").val() == SAVE_MODE_ADD) ? "/api/addMember" : "/api/editMember";
-//     var title = ($("#save-member-mode").val() == SAVE_MODE_ADD) ? "추가" : "수정";
-    
-//     callAPI({
-//         method: 'POST',
-//         url: url,
-//         data: {
-//             "id": id,
-//             "ids": ids,
-//             "name": name,
-//             "email": email,
-//             "sex": gender,
-//             "birthDate": birthDate,
-//             "mobilePhone": mobilePhone,                                
-//         }
-//     }).then(function (response) {
-//         alert(`${title} 되었습니다.`);
-//     }).catch(function (error) {
-//         console.log(error);
-//         alert(`${title}에 실패하였습니다.`)
-//     }).finally(function () {
-//         viewMemberList();
-
-//         clickCloseSaveMember();
-//     })
-// }
-
-// function clickCloseSaveMember() {
-//     $("#save-member").hide();
-// }
+    return;
+}
 
 </script>
 

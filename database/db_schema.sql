@@ -48,10 +48,9 @@ CREATE TABLE `plays` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `play_details` (    
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+
     `play_id` bigint unsigned NOT NULL,    
-    
-    `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
-    `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
     
     `ground` varchar(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT '' COMMENT '장소',
     `step` bigint unsigned NOT NULL DEFAULT 0 COMMENT '스텝',  	
@@ -63,7 +62,8 @@ CREATE TABLE `play_details` (
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NULL DEFAULT NULL,
     
-    INDEX `IX_play_details_play_id_member_id_seq_no`(`play_id`, `member_id`, `seq_no`) USING BTREE,    
+    PRIMARY KEY (`id`),    
+    INDEX `IX_play_details_play_id_member_id_seq_no`(`play_id`) USING BTREE,    
     INDEX `IX_play_details_ground`(`ground`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

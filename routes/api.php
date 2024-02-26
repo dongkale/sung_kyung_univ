@@ -28,5 +28,9 @@ Route::post("/editMember", [MemberController::class, "editMember"]);
 Route::post("/deleteMember", [MemberController::class, "deleteMember"]);
 
 Route::get("/test", [PlayController::class, "test"]);
+Route::post("/testPost", [PlayController::class, "testPost"]);
+
 Route::get("/playList", [PlayController::class, "playList"]);
 Route::get("/playDetail", [PlayController::class, "playDetail"]);
+
+Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
