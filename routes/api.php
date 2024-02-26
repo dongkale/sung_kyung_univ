@@ -34,3 +34,5 @@ Route::get("/playList", [PlayController::class, "playList"]);
 Route::get("/playDetail", [PlayController::class, "playDetail"]);
 
 Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
+
+Route::post("/login", [PlayController::class, "playLogin"]);

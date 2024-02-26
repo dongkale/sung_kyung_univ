@@ -54,17 +54,33 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "result": {
-                                            "type": "string",
-                                            "example": "success"
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "integer",
+                                            "example": "0"
                                         },
-                                        "param": {
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지",
                                             "type": "string",
-                                            "example": "1"
+                                            "example": ""
                                         },
-                                        "params": {
-                                            "type": "string",
-                                            "example": "[1,2,3]"
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "param": {
+                                                        "description": "요청 param",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "params": {
+                                                        "description": "요청 param",
+                                                        "type": "string",
+                                                        "example": "[1,2,3]"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -122,9 +138,131 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "result": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "integer",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지",
                                             "type": "string",
-                                            "example": "success"
+                                            "example": ""
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "param": {
+                                                        "description": "요청 param",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "params": {
+                                                        "description": "요청 param",
+                                                        "type": "string",
+                                                        "example": "[1,2,3]"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "로그인"
+                ],
+                "description": "로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
+                "operationId": "9795535c9faf99f6e1120299cdbf4264",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "description": "요청 ids 값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "로그인 IDS",
+                                "value": "001"
+                            }
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "요청 이름",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "로그인 이름",
+                                "value": "홍길동"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "string",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)",
+                                            "type": "string",
+                                            "example": "error message"
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "회원 아이디",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "ids": {
+                                                        "description": "회원 아이디(문자열 포맷)",
+                                                        "type": "string",
+                                                        "example": "001"
+                                                    },
+                                                    "name": {
+                                                        "description": "회원 이름",
+                                                        "type": "string",
+                                                        "example": "홍길동"
+                                                    },
+                                                    "email": {
+                                                        "description": "회원이메일",
+                                                        "type": "string",
+                                                        "example": "abc@example.com"
+                                                    },
+                                                    "birth_date": {
+                                                        "description": "회원 생년월일",
+                                                        "type": "string",
+                                                        "example": "1990-01-01"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"

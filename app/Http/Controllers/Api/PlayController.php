@@ -24,6 +24,8 @@ use Exception;
  */
 class PlayController extends Controller
 {
+    // tags : 메인 타이틀
+    // description: API 설명
     /**
      * @OA\Get (
      *     path="/api/test",
@@ -50,9 +52,14 @@ class PlayController extends Controller
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result", type="string", example="success"),
-     *             @OA\Property(property="param", type="string", example="1"),
-     *             @OA\Property(property="params", type="string", example="[1,2,3]")
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="param", type="string", description="요청 param", example="1"),
+     *                      @OA\Property(property="params", type="string", description="요청 param", example="[1,2,3]"),
+     *                  ),
+     *            )
      *         )
      *     )
      * )
@@ -65,14 +72,18 @@ class PlayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $param = $request->param;
         $params = $request->params;
 
         return response()->json([
-            "result" => "success",
+            "result_code" => 0,
+            "result_message" => "",
             "result_data" => ["param" => $param, "params" => $params],
         ]);
     }
@@ -103,7 +114,14 @@ class PlayController extends Controller
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result", type="string", example="success")
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="param", type="string", description="요청 param", example="1"),
+     *                      @OA\Property(property="params", type="string", description="요청 param", example="[1,2,3]"),
+     *                  ),
+     *            )
      *         )
      *     )
      * )
@@ -117,25 +135,124 @@ class PlayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $param = $request->param;
         $params = $request->params;
 
         return response()->json([
-            "result" => "success",
+            "result_code" => 0,
+            "result_message" => "",
             "result_data" => ["param" => $param, "params" => $params],
         ]);
     }
 
-    public function login(Request $request)
+    /**
+     * @OA\Post (
+     *     path="/api/login",
+     *     tags={"로그인"},
+     *     description="로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
+     *     @OA\Parameter(
+     *         description="요청 ids 값",
+     *         in="query",
+     *         name="ids",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="001", summary="로그인 IDS"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="요청 이름",
+     *         in="query",
+     *         name="name",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="홍길동", summary="로그인 이름"),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="결과값",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="error message", description="성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="ids", type="string", description="회원 아이디(문자열 포맷)", example="001"),
+     *                      @OA\Property(property="name", type="string", description="회원 이름", example="홍길동"),
+     *                      @OA\Property(property="email", type="string", description="회원이메일", example="abc@example.com"),
+     *                      @OA\Property(property="birth_date", type="string", description="회원 생년월일", example="1990-01-01"),
+     *                  ),
+     *            )
+     *         )
+     *     )
+     * )
+     */
+    public function playLogin(Request $request)
     {
         // 1. request: ids, name 으로 로그인
         // 2. process: members 테이블에서 확인
-        // 3. response: ids, name, email, birth_date
+        // 3. response: id, name, email, birth_date
 
-        return response()->json([]);
+        $validator = Validator::make($request->all(), [
+            "ids" => "required",
+            "name" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
+        }
+
+        $memberIds = $request->ids;
+        $memberName = $request->name;
+
+        $dbEncKey = env("DB_ENCRYPT_KEY");
+
+        $selectData = DB::table("members")
+            ->select(
+                "id",
+                "ids",
+                DB::raw("AES_DECRYPT(UNHEX(email), '{$dbEncKey}') as email"),
+                "name",
+                "sex",
+                "birth_date",
+                DB::raw(
+                    "AES_DECRYPT(UNHEX(mobile_phone), '{$dbEncKey}') as mobile_phone"
+                ),
+                "login_flag",
+                "last_login_at",
+                "created_at"
+            )
+            ->where("ids", "=", $memberIds)
+            ->where("name", "=", $memberName)
+            ->get()
+            ->first();
+        if (empty($selectData)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Not Found",
+            ]);
+        }
+
+        $resposeData = [
+            "id" => $selectData->id,
+            "ids" => $selectData->ids,
+            "name" => $selectData->name,
+            "email" => $selectData->email,
+            "birth_date" => $selectData->birth_date,
+        ];
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "",
+            "result_data" => $resposeData,
+        ]);
     }
 
     public function playStart(Request $request)
@@ -169,6 +286,7 @@ class PlayController extends Controller
     public function logout(Request $request)
     {
         // 1. request: ids
+        // 2. process: members.login_flag 업데이트
 
         return response()->json([]);
     }
