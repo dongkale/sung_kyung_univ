@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use stdClass;
+
 class CommonUtils
 {
     public static function makeUrl(
@@ -76,4 +78,63 @@ class CommonUtils
 
         return true;
     }
+
+    public static function ToObject($array)
+    {
+        // Create new stdClass object
+        $object = new stdClass();
+
+        // Use loop to convert array into
+        // stdClass object
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $value = CommonUtils::ToObject($value);
+            }
+            $object->$key = $value;
+        }
+        return $object;
+    }
+
+    // stdClass -> Array 로 변경
+    // public static function objectToArray($array)
+    // {
+    //     if (is_object($array)) {
+    //         // Gets the properties of the given object
+    //         // with get_object_vars function
+    //         $array = get_object_vars($array);
+    //     }
+
+    //     if (is_array($array)) {
+    //         /*
+    //          * Return array converted to object
+    //          * Using __FUNCTION__ (Magic constant)
+    //          * for recursive call
+    //          */
+    //         return array_map(__FUNCTION__, $array);
+    //     } else {
+    //         // Return array
+    //         return $array;
+    //     }
+    // }
+
+    // Array -> stdClass 로 변경
+    // public static function arrayToObject($array)
+    // {
+    //     if (!is_array($array)) {
+    //         return $array;
+    //     }
+
+    //     $object = new stdClass();
+    //     if (is_array($array) && count($array) > 0) {
+    //         foreach ($array as $name => $value) {
+    //             $name = strtolower(trim($name));
+    //             if (!empty($name)) {
+    //                 $object->$name = CommonUtils::arrayToObject($value);
+    //             }
+    //         }
+    //         return $object;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 }

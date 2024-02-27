@@ -69,18 +69,16 @@ CREATE TABLE `play_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- play_logs
--- CREATE TABLE `play_logs` (
---     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
---     `member_id` bigint unsigned NOT NULL,
---     `seq_no` bigint unsigned NOT NULL,
+CREATE TABLE `play_logs` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
 
---     `start_date` timestamp NULL DEFAULT NULL COMMENT '시작 시간',  	
---     `date_date` timestamp NULL DEFAULT NULL COMMENT '종료 시간',  	     
---     `total_play_time` bigint unsigned NOT NULL DEFAULT 0 COMMENT '실제 플레이 시간',  	
+    `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
+    `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
+
+    `data` JSON
     
---     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     
---     PRIMARY KEY (`id`),    
---     INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
---     INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    PRIMARY KEY (`id`),    
+    INDEX `IX_play_details_play_id`(`play_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

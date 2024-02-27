@@ -286,7 +286,7 @@
                     {
                         "name": "id",
                         "in": "query",
-                        "description": "요청 id 값",
+                        "description": "id 값",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -328,6 +328,119 @@
                                                     "play_seq_no": {
                                                         "description": "플레이 번호",
                                                         "type": "string",
+                                                        "example": "1"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playStat": {
+            "post": {
+                "tags": [
+                    "플레이 통계"
+                ],
+                "summary": "플레이 통계 API",
+                "description": "플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
+                "operationId": "ceb901b7d1f697e655152a2441980f2c",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "유저 id",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "play_seq_no": {
+                                        "description": "플레이 번호",
+                                        "type": "string",
+                                        "example": "5"
+                                    },
+                                    "play_stats": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "ground": {
+                                                    "description": "장소(현관,거실,...)",
+                                                    "type": "string",
+                                                    "example": "거실"
+                                                },
+                                                "step": {
+                                                    "description": "순서(1,2,3)",
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "actual_play_time": {
+                                                    "description": "소요시간",
+                                                    "type": "integer",
+                                                    "example": "120"
+                                                },
+                                                "false_count": {
+                                                    "description": "실패 횟수",
+                                                    "type": "integer",
+                                                    "example": "1"
+                                                },
+                                                "start_date": {
+                                                    "description": "시작 시간",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-02-22 11:10:11"
+                                                },
+                                                "end_date": {
+                                                    "description": "종료 시간",
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2024-02-22 11:20:59"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "string",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)",
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "회원 아이디",
+                                                        "type": "integer",
+                                                        "example": "1"
+                                                    },
+                                                    "play_seq_no": {
+                                                        "description": "플레이 번호",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     }
                                                 },

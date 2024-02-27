@@ -21,21 +21,24 @@ Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
     return $request->user();
 });
 
-Route::get("/memberList", [MemberController::class, "memberList"]);
+Route::middleware(["logger"])->group(function () {
+    Route::get("/memberList", [MemberController::class, "memberList"]);
 
-Route::post("/addMember", [MemberController::class, "addMember"]);
-Route::post("/editMember", [MemberController::class, "editMember"]);
-Route::post("/deleteMember", [MemberController::class, "deleteMember"]);
+    Route::post("/addMember", [MemberController::class, "addMember"]);
+    Route::post("/editMember", [MemberController::class, "editMember"]);
+    Route::post("/deleteMember", [MemberController::class, "deleteMember"]);
 
-Route::get("/test", [PlayController::class, "test"]);
-Route::post("/testPost", [PlayController::class, "testPost"]);
+    Route::get("/test", [PlayController::class, "test"]);
+    Route::post("/testPost", [PlayController::class, "testPost"]);
 
-Route::get("/playList", [PlayController::class, "playList"]);
-Route::get("/playDetail", [PlayController::class, "playDetail"]);
+    Route::get("/playList", [PlayController::class, "playList"]);
+    Route::get("/playDetail", [PlayController::class, "playDetail"]);
 
-Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
+    Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
 
-Route::post("/playLogin", [PlayController::class, "playLogin"]);
-Route::post("/playStart", [PlayController::class, "playStart"]);
-Route::post("/playEnd", [PlayController::class, "playEnd"]);
-Route::post("/playLogout", [PlayController::class, "playLogout"]);
+    Route::post("/playLogin", [PlayController::class, "playLogin"]);
+    Route::post("/playStart", [PlayController::class, "playStart"]);
+    Route::post("/playStat", [PlayController::class, "playStat"]);
+    Route::post("/playEnd", [PlayController::class, "playEnd"]);
+    Route::post("/playLogout", [PlayController::class, "playLogout"]);
+});

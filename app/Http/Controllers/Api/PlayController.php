@@ -212,9 +212,6 @@ class PlayController extends Controller
             ]);
         }
 
-        $params = http_build_query($request->all());
-        Log::info("[PlayStart][Request] params: {$params}");
-
         $memberIds = $request->ids;
         $memberName = $request->name;
 
@@ -293,7 +290,7 @@ class PlayController extends Controller
      *     tags={"플레이 시작"},
      *     description="플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
      *     @OA\Parameter(
-     *         description="요청 id 값",
+     *         description="id 값",
      *         in="query",
      *         name="id",
      *         required=true,
@@ -334,9 +331,6 @@ class PlayController extends Controller
                 "result_message" => $validator->errors(),
             ]);
         }
-
-        $params = http_build_query($request->all());
-        Log::info("[PlayStart][Request] params: {$params}");
 
         $playSeqNo = 0;
 
@@ -410,13 +404,144 @@ class PlayController extends Controller
         ]);
     }
 
-    public function playStatistics(Request $request)
+    /**
+     * @OA\Post (
+     *     path="/api/playStat",
+     *     summary="플레이 통계 API",
+     *     tags={"플레이 통계"},
+     *     description="플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              @OA\Property(property="id", type="string", example="1", description="유저 id"),
+     *              @OA\Property(property="play_seq_no", type="string", example="5", description="플레이 번호"),
+     *              @OA\Property(property="play_stats", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="ground", type="string", description="장소(현관,거실,...)", example="거실"),
+     *                      @OA\Property(property="step", type="int", description="순서(1,2,3)", example="1"),
+     *                      @OA\Property(property="actual_play_time", type="int", description="소요시간", example="120"),
+     *                      @OA\Property(property="false_count", type="int", description="실패 횟수", example="1"),
+     *                      @OA\Property(property="start_date", type="datetime", description="시작 시간", example="2024-02-22 11:10:11"),
+     *                      @OA\Property(property="end_date", type="datetime", description="종료 시간", example="2024-02-22 11:20:59"),
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="결과값",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *              @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)"),
+     *              @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="id", type="int", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="play_seq_no", type="int", description="플레이 번호", example="1"),
+     *                  ),
+     *             )
+     *         )
+     *     )
+     * )
+     */
+
+    public function playStat(Request $request)
     {
         // 1. request: ids, play_seq_no, statistics:[{ground, step, actual_play_time, false_count, start_date, end_date}, ...]
         // 2. process: play_details 테이블 insert
         // 3. response:
 
-        return response()->json([]);
+        // {
+        //     "id" : 16,
+        //     "play_seq_no" : 5,
+        //     "play_stat" : [ {"ground":" 거실","step":1,"actual_play_time": 10,"false_count": 0,"start_date": "2021-07-01 10:00:00", "end_date": "2021-07-01 10:00:10"},
+        //                     {"ground":" 거실", "step":2, "actual_play_time": 20, "false_count": 1, "start_date": "2021-07-01 10:00:10", "end_date": "2021-07-01 10:00:30"}]
+        // }
+
+        $validator = Validator::make($request->all(), [
+            "id" => "required",
+            "play_seq_no" => "required",
+            "play_stats" => "required",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
+        }
+
+        $memberId = $request->id;
+        $playSeqNo = $request->play_seq_no;
+        $playStats = CommonUtils::ToObject($request->play_stats);
+
+        $dbPlay = DB::table("plays")
+            ->where("member_id", "=", $memberId)
+            ->where("seq_no", "=", $playSeqNo);
+
+        $play = $dbPlay->first();
+        if (empty($play)) {
+            Log::error(
+                "[playStat][Check] id: {$memberId}, play_seq_no: : {$playSeqNo} invalid"
+            );
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Invalid play_seq_no",
+            ]);
+        }
+
+        $playDetail = DB::table("play_details")
+            ->where("play_id", "=", $play->id)
+            ->get();
+
+        foreach ($playDetail as $item) {
+            Log::info(
+                "[playStat][Stat] Old List: play_id: {$play->id}, ground: {$item->ground}, step:{$item->step}, actual_play_time: {$item->actual_play_time}, false_count: {$item->false_count}, start_date: {$item->start_date}, end_date: {$item->end_date}"
+            );
+        }
+
+        DB::beginTransaction();
+        try {
+            DB::table("play_details")
+                ->where("play_id", "=", $play->id)
+                ->delete();
+
+            foreach ($playStats as $item) {
+                Log::info(
+                    "[playStat][Stat] New List: play_id: {$play->id}, ground: {$item->ground}, step:{$item->step}, actual_play_time: {$item->actual_play_time}, false_count: {$item->false_count}, start_date: {$item->start_date}, end_date: {$item->end_date}"
+                );
+
+                DB::table("play_details")->insertGetId([
+                    "play_id" => $play->id,
+                    "ground" => $item->ground,
+                    "step" => $item->step,
+                    "actual_play_time" => $item->actual_play_time,
+                    "false_count" => $item->false_count,
+                    "start_date" => $item->start_date,
+                    "end_date" => $item->end_date,
+                    "updated_at" => DB::raw("NOW()"),
+                ]);
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[playStat] Exception: " . $e->getMessage());
+            Log::error("[playStat] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => [
+                "id" => $memberId,
+                "play_seq_no" => $playSeqNo,
+            ],
+        ]);
     }
 
     /**
@@ -473,9 +598,6 @@ class PlayController extends Controller
                 "result_message" => $validator->errors(),
             ]);
         }
-
-        $params = http_build_query($request->all());
-        Log::info("[playEnd][Request] params: {$params}");
 
         $totalTime = 0;
 
@@ -588,9 +710,6 @@ class PlayController extends Controller
                 "result_message" => $validator->errors(),
             ]);
         }
-
-        $params = http_build_query($request->all());
-        Log::info("[PlayLogout][Request] params: {$params}");
 
         $memberId = $request->id;
 
