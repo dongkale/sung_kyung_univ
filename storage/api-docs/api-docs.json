@@ -181,7 +181,7 @@
                     "로그인"
                 ],
                 "summary": "로그인 API",
-                "description": "로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
+                "description": "로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
                 "operationId": "b1dad4ee382560a02e12b8dee5a65edf",
                 "parameters": [
                     {
@@ -230,7 +230,7 @@
                                         "result_message": {
                                             "description": "성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)",
                                             "type": "string",
-                                            "example": "error message"
+                                            "example": ""
                                         },
                                         "result_data": {
                                             "type": "array",
@@ -260,6 +260,228 @@
                                                         "description": "회원 생년월일",
                                                         "type": "string",
                                                         "example": "1990-01-01"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playStart": {
+            "post": {
+                "tags": [
+                    "플레이 시작"
+                ],
+                "summary": "플레이 시작 API",
+                "description": "플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
+                "operationId": "629d5580dfe64003e1f84089762238fc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "요청 id 값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "로그인 ID",
+                                "value": "1"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "string",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)",
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "회원 아이디",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "play_seq_no": {
+                                                        "description": "플레이 번호",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playEnd": {
+            "post": {
+                "tags": [
+                    "플레이 종료"
+                ],
+                "summary": "플레이 종료 API",
+                "description": "플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
+                "operationId": "dc2996b1e5c7762c747c9d381ba38a0d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "요청 id 값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "login ID",
+                                "value": "1"
+                            }
+                        }
+                    },
+                    {
+                        "name": "play_seq_no",
+                        "in": "query",
+                        "description": "요청 play_seq_no 값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "play seq_no",
+                                "value": "5"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "string",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지",
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "회원 아이디",
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "play_seq_no": {
+                                                        "description": "플레이 번호",
+                                                        "type": "string",
+                                                        "example": "5"
+                                                    },
+                                                    "play_total_time": {
+                                                        "description": "플레이 시간(초)",
+                                                        "type": "string",
+                                                        "example": "160"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playLogout": {
+            "post": {
+                "tags": [
+                    "로그아웃 "
+                ],
+                "summary": "로그아웃 API",
+                "description": "로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
+                "operationId": "4840f5d0d8af6524fa1be9b2c358c5bc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "요청 id 값",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "string": {
+                                "summary": "logout ID",
+                                "value": "1"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "결과값",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result_code": {
+                                            "description": "성공:0, 실패:-1",
+                                            "type": "string",
+                                            "example": "0"
+                                        },
+                                        "result_message": {
+                                            "description": "성공:EMPTY, 실패:에러메세지",
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "result_data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "회원 아이디",
+                                                        "type": "string",
+                                                        "example": "1"
                                                     }
                                                 },
                                                 "type": "object"

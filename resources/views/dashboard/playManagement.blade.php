@@ -158,8 +158,8 @@ function viewPlayList() {
                 html += `   <td width="8%">${(item.m_sex == 'M') ? '남성' : '여성'}</td>`;                
                 html += `   <td>${reformatBirthDate(item.m_birth_date)}</td>`;
                 html += `   <td>${item.p_seq_no}</td>`;
-                html += `   <td>${item.p_start_date}</td>`;
-                html += `   <td>${item.p_end_date}</td>`;
+                html += `   <td>${item.p_start_date ? item.p_start_date : '-'}</td>`;
+                html += `   <td>${item.p_end_date ? item.p_end_date : '-'}</td>`;
                 html += `   <td>${item.p_total_time} sec</td>`;                
                 html += `   <td>${item.p_created_at}</td>`;
                 html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
@@ -196,8 +196,8 @@ function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
                 html += `   <td>${item.ground}</td>`;
                 html += `   <td>${item.step}</td>`;
                 html += `   <td>${item.actual_play_time} sec</td>`;
-                html += `   <td>${item.start_date}</td>`;
-                html += `   <td>${item.end_date}</td>`;
+                html += `   <td>${item.start_date ? item.start_date : '-'}</td>`;
+                html += `   <td>${item.end_date ? item.end_date : '-'}</td>`;
                 html += `   <td>${item.false_count}</td>`; 
                 html += `   <td><button type="button"`; 
                 html += `               class="btn btn-danger mt-2"`;

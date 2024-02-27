@@ -24,7 +24,7 @@ use Exception;
  */
 class PlayController extends Controller
 {
-    const LOGIN_PLAY_START_GAP_TIME = 60;
+    const LOGIN_PLAY_START_GAP_TIME = 6000;
 
     // tags : 메인 타이틀
     // description: API 설명
@@ -158,7 +158,7 @@ class PlayController extends Controller
      *     path="/api/playLogin",
      *     summary="로그인 API",
      *     tags={"로그인"},
-     *     description="로그인 시도, 해당  Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID(DB 에는 ids)",
+     *     description="로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
      *     @OA\Parameter(
      *         description="요청 ids 값",
      *         in="query",
@@ -180,7 +180,7 @@ class PlayController extends Controller
      *         description="결과값",
      *         @OA\JsonContent(
      *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
-     *             @OA\Property(property="result_message", type="string", example="error message", description="성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)"),
      *             @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
      *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
@@ -212,6 +212,9 @@ class PlayController extends Controller
             ]);
         }
 
+        $params = http_build_query($request->all());
+        Log::info("[PlayStart][Request] params: {$params}");
+
         $memberIds = $request->ids;
         $memberName = $request->name;
 
@@ -239,33 +242,80 @@ class PlayController extends Controller
         if (empty($selectData)) {
             return response()->json([
                 "result_code" => -1,
-                "result_message" => "Not Found",
+                "result_message" => "User Not Found",
             ]);
         }
 
-        // login 시도 시간 남겨서 playStart 에서 체크한다
-        DB::table("members")
-            ->where("ids", "=", $memberIds)
-            ->where("name", "=", $memberName)
-            ->update([
-                "try_login_at" => DB::raw("NOW()"),
-            ]);
+        DB::beginTransaction();
+        try {
+            // login 시도 시간 남겨서 playStart 에서 체크한다
+            DB::table("members")
+                ->where("ids", "=", $memberIds)
+                ->where("name", "=", $memberName)
+                ->update([
+                    "try_login_at" => DB::raw("NOW()"),
+                    "updated_at" => DB::raw("NOW()"),
+                ]);
 
-        $resposeData = [
-            "id" => $selectData->id,
-            "ids" => $selectData->ids,
-            "name" => $selectData->name,
-            "email" => $selectData->email,
-            "birth_date" => $selectData->birth_date,
-        ];
+            DB::commit();
 
+            Log::info(
+                "[playLogin][Ok] id: {$selectData->id}, name: {$memberName}"
+            );
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[PlayStart] Exception: " . $e->getMessage());
+            Log::error("[PlayStart] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
         return response()->json([
             "result_code" => 0,
-            "result_message" => "",
-            "result_data" => $resposeData,
+            "result_message" => "Success",
+            "result_data" => [
+                "id" => $selectData->id,
+                "ids" => $selectData->ids,
+                "name" => $selectData->name,
+                "email" => $selectData->email,
+                "birth_date" => $selectData->birth_date,
+            ],
         ]);
     }
 
+    /**
+     * @OA\Post (
+     *     path="/api/playStart",
+     *     summary="플레이 시작 API",
+     *     tags={"플레이 시작"},
+     *     description="플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
+     *     @OA\Parameter(
+     *         description="요청 id 값",
+     *         in="query",
+     *         name="id",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="1", summary="로그인 ID"),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="결과값",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="play_seq_no", type="string", description="플레이 번호", example="1"),
+     *                  ),
+     *            )
+     *         )
+     *     )
+     * )
+     */
     public function playStart(Request $request)
     {
         // 1. request: id
@@ -285,36 +335,58 @@ class PlayController extends Controller
             ]);
         }
 
+        $params = http_build_query($request->all());
+        Log::info("[PlayStart][Request] params: {$params}");
+
+        $playSeqNo = 0;
+
         $memberId = $request->id;
 
         $loginGapTime = self::LOGIN_PLAY_START_GAP_TIME;
 
-        $selectData = DB::table("members")
+        $dbMember = DB::table("members")
             ->where("id", "=", $memberId)
             ->whereRaw(
                 "TIMESTAMPDIFF(SECOND, try_login_at , NOW()) < {$loginGapTime}"
-            )
-            ->first();
-        if (empty($selectData)) {
+            );
+
+        $member = $dbMember->first();
+        if (empty($member)) {
+            Log::error("[PlayStart][Check] id: {$memberId} is not login");
             return response()->json([
                 "result_code" => -1,
-                "result_message" => "is not login",
+                "result_message" => "Not Login",
             ]);
         }
 
-        Log::Info("==> {$selectData->name}");
+        // Log::info(
+        //     "[PlayStart][LoginCheck] id: {$memberId}({$member->ids}), name: {$member->name}"
+        // );
 
         DB::beginTransaction();
         try {
-            // 3. process: members.login_flag, members.last_login_at 업데이트
-            // 4. process: members.play_seq_no 번호 증감
-            // 5. process: plays 테이블 insert
-            // 6. response: play_seq_no
+            $dbMember->update([
+                "login_flag" => "1",
+                "last_login_at" => DB::raw("NOW()"),
+                "play_seq_no" => DB::raw("play_seq_no + 1"),
+                "updated_at" => DB::raw("NOW()"),
+            ]);
+
+            $member = $dbMember->first();
+
+            $playId = DB::table("plays")->insertGetId([
+                "member_id" => $memberId,
+                "seq_no" => $member->play_seq_no,
+                "start_date" => DB::raw("NOW()"),
+                "updated_at" => DB::raw("NOW()"),
+            ]);
 
             DB::commit();
 
+            $playSeqNo = $member->play_seq_no;
+
             Log::info(
-                "[PlayStart] id: {$memberId}, ground:{$selectData->ground}, step: {$selectData->step}, false_count: {$selectData->false_count}, start_date: {$selectData->start_date}, end_date: {$selectData->end_date}"
+                "[PlayStart][Ok] id: {$memberId}, name: {$member->name}, play_seq_no: {$member->play_seq_no}, play_id: {$playId}"
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -328,13 +400,13 @@ class PlayController extends Controller
             );
         }
 
-        // $memberIds = $request->ids;
-        // $memberName = $request->name;
-
         return response()->json([
             "result_code" => 0,
-            "result_message" => "success",
-            "id" => $memberId,
+            "result_message" => "Success",
+            "result_data" => [
+                "id" => $memberId,
+                "play_seq_no" => $playSeqNo,
+            ],
         ]);
     }
 
@@ -347,20 +419,221 @@ class PlayController extends Controller
         return response()->json([]);
     }
 
+    /**
+     * @OA\Post (
+     *     path="/api/playEnd",
+     *     summary="플레이 종료 API",
+     *     tags={"플레이 종료"},
+     *     description="플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
+     *     @OA\Parameter(
+     *         description="요청 id 값",
+     *         in="query",
+     *         name="id",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="1", summary="login ID"),
+     *     ),
+     *     @OA\Parameter(
+     *         description="요청 play_seq_no 값",
+     *         in="query",
+     *         name="play_seq_no",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="5", summary="play seq_no"),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="결과값",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="play_seq_no", type="string", description="플레이 번호", example="5"),
+     *                      @OA\Property(property="play_total_time", type="string", description="플레이 시간(초)", example="160"),
+     *                  ),
+     *            )
+     *         )
+     *     )
+     * )
+     */
     public function playEnd(Request $request)
     {
-        // 1. request: ids, start_date, end_date, total_time
+        // 1. request: id, play_seq_no, start_date, end_date, total_time
         // 2. process: plays 테이블 update
+        $validator = Validator::make($request->all(), [
+            "id" => "required",
+            "play_seq_no" => "required",
+        ]);
 
-        return response()->json([]);
+        if ($validator->fails()) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
+        }
+
+        $params = http_build_query($request->all());
+        Log::info("[playEnd][Request] params: {$params}");
+
+        $totalTime = 0;
+
+        // $currentTime = date("Y-m-d H:i:s");
+
+        $memberId = $request->id;
+        $playSeqNo = $request->play_seq_no;
+
+        // $startDate = $request->start_date;
+        // $endDate = $request->end_date;
+        // $totalTime = $request->total_time;
+
+        $dbPlay = DB::table("plays")
+            ->where("member_id", "=", $memberId)
+            ->where("seq_no", "=", $playSeqNo);
+
+        $play = $dbPlay->first();
+        if (empty($play)) {
+            Log::error(
+                "[PlayEnd][Check] id: {$memberId}, play_seq_no: : {$playSeqNo} invalid"
+            );
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Invalid play_seq_no",
+            ]);
+        }
+
+        // Log::info(
+        //     "[PlayEnd][Check] id: {$memberId}, play_seq_no: {$playSeqNo}"
+        // );
+
+        DB::beginTransaction();
+        try {
+            $dbPlay->update([
+                "total_time" => DB::raw(
+                    "TIMESTAMPDIFF(SECOND, start_date, NOW())"
+                ),
+                "end_date" => DB::raw("NOW()"),
+                "updated_at" => DB::raw("NOW()"),
+            ]);
+
+            DB::commit();
+
+            $totalTime = $dbPlay->first()->total_time;
+
+            Log::info(
+                "[PlayEnd][Ok] id: {$memberId}, play_seq_no: {$playSeqNo}, total_time: {$totalTime}"
+            );
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[PlayEnd] Exception: " . $e->getMessage());
+            Log::error("[PlayEnd] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => [
+                "id" => $memberId,
+                "play_seq_no" => $playSeqNo,
+                "play_total_time" => $totalTime,
+            ],
+        ]);
     }
 
-    public function logout(Request $request)
+    /**
+     * @OA\Post (
+     *     path="/api/playLogout",
+     *     summary="로그아웃 API",
+     *     tags={"로그아웃 "},
+     *     description="로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
+     *     @OA\Parameter(
+     *         description="요청 id 값",
+     *         in="query",
+     *         name="id",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         @OA\Examples(example="string", value="1", summary="logout ID"),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="결과값",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
+     *             @OA\Property(property="result_data", type="array",
+     *                  @OA\Items(
+     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1")
+     *                  ),
+     *            )
+     *         )
+     *     )
+     * )
+     */
+    public function playLogout(Request $request)
     {
-        // 1. request: ids
-        // 2. process: members.login_flag 업데이트
+        $validator = Validator::make($request->all(), [
+            "id" => "required",
+        ]);
 
-        return response()->json([]);
+        if ($validator->fails()) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
+        }
+
+        $params = http_build_query($request->all());
+        Log::info("[PlayLogout][Request] params: {$params}");
+
+        $memberId = $request->id;
+
+        $dbMember = DB::table("members")->where("id", "=", $memberId);
+
+        $member = $dbMember->first();
+        if (empty($member)) {
+            Log::error("[PlayLogout][Check] id: {$memberId} invalid");
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "not found member id",
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            $dbMember->update([
+                "login_flag" => "0",
+                "updated_at" => DB::raw("NOW()"),
+            ]);
+
+            DB::commit();
+
+            Log::info("[PlayLogout][Ok] id: {$memberId}");
+        } catch (Exception $e) {
+            DB::rollback();
+
+            Log::error("[PlayLogout] Exception: " . $e->getMessage());
+            Log::error("[PlayLogout] Callstack:" . $e->getTraceAsString());
+
+            return response()->json(
+                ["result_code" => -1, "result_message" => "Exception"],
+                500
+            );
+        }
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "success",
+            "result_data" => [
+                "id" => $memberId,
+            ],
+        ]);
     }
 
     public function playList(Request $request)

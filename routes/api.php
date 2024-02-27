@@ -37,3 +37,5 @@ Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
 
 Route::post("/playLogin", [PlayController::class, "playLogin"]);
 Route::post("/playStart", [PlayController::class, "playStart"]);
+Route::post("/playEnd", [PlayController::class, "playEnd"]);
+Route::post("/playLogout", [PlayController::class, "playLogout"]);
