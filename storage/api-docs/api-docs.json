@@ -10,16 +10,16 @@
         "/api/test": {
             "get": {
                 "tags": [
-                    "API Get 테스트"
+                    "[TEST] API Get 테스트"
                 ],
                 "summary": "API Get 테스트",
                 "description": "API Get 테스트",
-                "operationId": "3f49eb50f1b2e91cb1fabbaf598b1422",
+                "operationId": "41730d654a828ff059993a1d819c38d3",
                 "parameters": [
                     {
                         "name": "param",
                         "in": "query",
-                        "description": "요청값",
+                        "description": "요청 값",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -34,7 +34,7 @@
                     {
                         "name": "params",
                         "in": "query",
-                        "description": "요청값들",
+                        "description": "요청 값들",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -94,43 +94,32 @@
         "/api/testPost": {
             "post": {
                 "tags": [
-                    "API Post 테스트"
+                    "[TEST] API Post 테스트"
                 ],
                 "summary": "API Post 테스트",
                 "description": "API Post 테스트",
                 "operationId": "a5c35502d1e1827fd69c02f46a85e382",
-                "parameters": [
-                    {
-                        "name": "param",
-                        "in": "query",
-                        "description": "요청값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "paramter",
-                                "value": "1"
-                            }
-                        }
-                    },
-                    {
-                        "name": "params",
-                        "in": "query",
-                        "description": "요청값들",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "paramters",
-                                "value": "[1,2,3]"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "param": {
+                                        "description": "요청 값",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "params": {
+                                        "description": "요청 값들",
+                                        "type": "string",
+                                        "example": "[1,2,3]"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "결과값",
@@ -183,38 +172,27 @@
                 "summary": "로그인 API",
                 "description": "로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
                 "operationId": "b1dad4ee382560a02e12b8dee5a65edf",
-                "parameters": [
-                    {
-                        "name": "ids",
-                        "in": "query",
-                        "description": "요청 ids 값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "로그인 IDS",
-                                "value": "001"
-                            }
-                        }
-                    },
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "요청 이름",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "로그인 이름",
-                                "value": "홍길동"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "ids": {
+                                        "description": "유저 ids(001, 002)",
+                                        "type": "string",
+                                        "example": "1"
+                                    },
+                                    "name": {
+                                        "description": "유저 이름",
+                                        "type": "string",
+                                        "example": "홍길동"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "결과값",
@@ -224,7 +202,7 @@
                                     "properties": {
                                         "result_code": {
                                             "description": "성공:0, 실패:-1",
-                                            "type": "string",
+                                            "type": "integer",
                                             "example": "0"
                                         },
                                         "result_message": {
@@ -238,11 +216,11 @@
                                                 "properties": {
                                                     "id": {
                                                         "description": "회원 아이디",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     },
                                                     "ids": {
-                                                        "description": "회원 아이디(문자열 포맷)",
+                                                        "description": "회원 아이디(문자열)",
                                                         "type": "string",
                                                         "example": "001"
                                                     },
@@ -282,23 +260,22 @@
                 "summary": "플레이 시작 API",
                 "description": "플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
                 "operationId": "629d5580dfe64003e1f84089762238fc",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "id 값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "로그인 ID",
-                                "value": "1"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "유저 id",
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "결과값",
@@ -308,7 +285,7 @@
                                     "properties": {
                                         "result_code": {
                                             "description": "성공:0, 실패:-1",
-                                            "type": "string",
+                                            "type": "integer",
                                             "example": "0"
                                         },
                                         "result_message": {
@@ -322,12 +299,12 @@
                                                 "properties": {
                                                     "id": {
                                                         "description": "회원 아이디",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     },
                                                     "play_seq_no": {
                                                         "description": "플레이 번호",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     }
                                                 },
@@ -421,7 +398,7 @@
                                     "properties": {
                                         "result_code": {
                                             "description": "성공:0, 실패:-1",
-                                            "type": "string",
+                                            "type": "integer",
                                             "example": "0"
                                         },
                                         "result_message": {
@@ -464,38 +441,27 @@
                 "summary": "플레이 종료 API",
                 "description": "플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
                 "operationId": "dc2996b1e5c7762c747c9d381ba38a0d",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "요청 id 값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "login ID",
-                                "value": "1"
-                            }
-                        }
-                    },
-                    {
-                        "name": "play_seq_no",
-                        "in": "query",
-                        "description": "요청 play_seq_no 값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "play seq_no",
-                                "value": "5"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "유저 id",
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "play_seq_no": {
+                                        "description": "플레이 번호",
+                                        "type": "integer",
+                                        "example": "5"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "결과값",
@@ -505,13 +471,13 @@
                                     "properties": {
                                         "result_code": {
                                             "description": "성공:0, 실패:-1",
-                                            "type": "string",
+                                            "type": "integer",
                                             "example": "0"
                                         },
                                         "result_message": {
                                             "description": "성공:EMPTY, 실패:에러메세지",
                                             "type": "string",
-                                            "example": ""
+                                            "example": "Success"
                                         },
                                         "result_data": {
                                             "type": "array",
@@ -519,17 +485,17 @@
                                                 "properties": {
                                                     "id": {
                                                         "description": "회원 아이디",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     },
                                                     "play_seq_no": {
                                                         "description": "플레이 번호",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "5"
                                                     },
                                                     "play_total_time": {
                                                         "description": "플레이 시간(초)",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "160"
                                                     }
                                                 },
@@ -553,23 +519,22 @@
                 "summary": "로그아웃 API",
                 "description": "로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
                 "operationId": "4840f5d0d8af6524fa1be9b2c358c5bc",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "query",
-                        "description": "요청 id 값",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "examples": {
-                            "string": {
-                                "summary": "logout ID",
-                                "value": "1"
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "유저 id",
+                                        "type": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "결과값",
@@ -579,7 +544,7 @@
                                     "properties": {
                                         "result_code": {
                                             "description": "성공:0, 실패:-1",
-                                            "type": "string",
+                                            "type": "integer",
                                             "example": "0"
                                         },
                                         "result_message": {
@@ -593,7 +558,7 @@
                                                 "properties": {
                                                     "id": {
                                                         "description": "회원 아이디",
-                                                        "type": "string",
+                                                        "type": "integer",
                                                         "example": "1"
                                                     }
                                                 },

@@ -31,11 +31,11 @@ class PlayController extends Controller
     /**
      * @OA\Get (
      *     path="/api/test",
-     *     tags={"API Get 테스트"},
+     *     tags={"[TEST] API Get 테스트"},
      *     summary="API Get 테스트",
      *     description="API Get 테스트",
      *     @OA\Parameter(
-     *         description="요청값",
+     *         description="요청 값",
      *         in="query",
      *         name="param",
      *         required=true,
@@ -43,7 +43,7 @@ class PlayController extends Controller
      *         @OA\Examples(example="string", value="1", summary="paramter"),
      *     ),
      *     @OA\Parameter(
-     *         description="요청값들",
+     *         description="요청 값들",
      *         in="query",
      *         name="params",
      *         required=true,
@@ -66,7 +66,7 @@ class PlayController extends Controller
      *     )
      * )
      */
-    public function test(Request $request)
+    public function testGet(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "param" => "required",
@@ -85,7 +85,7 @@ class PlayController extends Controller
 
         return response()->json([
             "result_code" => 0,
-            "result_message" => "",
+            "result_message" => "Success",
             "result_data" => ["param" => $param, "params" => $params],
         ]);
     }
@@ -93,24 +93,14 @@ class PlayController extends Controller
     /**
      * @OA\Post (
      *     path="/api/testPost",
-     *     tags={"API Post 테스트"},
+     *     tags={"[TEST] API Post 테스트"},
      *     summary="API Post 테스트",
      *     description="API Post 테스트",
-     *     @OA\Parameter(
-     *         description="요청값",
-     *         in="query",
-     *         name="param",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="1", summary="paramter"),
-     *     ),
-     *     @OA\Parameter(
-     *         description="요청값들",
-     *         in="query",
-     *         name="params",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="[1,2,3]", summary="paramters"),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *              @OA\Property(property="param", type="string", example="1", description="요청 값"),
+     *              @OA\Property(property="params", type="string", example="[1,2,3]", description="요청 값들")     *
+     *         )
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -148,7 +138,7 @@ class PlayController extends Controller
 
         return response()->json([
             "result_code" => 0,
-            "result_message" => "",
+            "result_message" => "Success",
             "result_data" => ["param" => $param, "params" => $params],
         ]);
     }
@@ -159,32 +149,22 @@ class PlayController extends Controller
      *     summary="로그인 API",
      *     tags={"로그인"},
      *     description="로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
-     *     @OA\Parameter(
-     *         description="요청 ids 값",
-     *         in="query",
-     *         name="ids",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="001", summary="로그인 IDS"),
-     *     ),
-     *     @OA\Parameter(
-     *         description="요청 이름",
-     *         in="query",
-     *         name="name",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="홍길동", summary="로그인 이름"),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              @OA\Property(property="ids", type="string", example="1", description="유저 ids(001, 002)"),
+     *              @OA\Property(property="name", type="string", example="홍길동", description="유저 이름"),
+     *          ),
      *     ),
      *     @OA\Response(
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
      *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유져 미존재시 Not Found)"),
      *             @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
-     *                      @OA\Property(property="ids", type="string", description="회원 아이디(문자열 포맷)", example="001"),
+     *                      @OA\Property(property="id", type="int", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="ids", type="string", description="회원 아이디(문자열)", example="001"),
      *                      @OA\Property(property="name", type="string", description="회원 이름", example="홍길동"),
      *                      @OA\Property(property="email", type="string", description="회원이메일", example="abc@example.com"),
      *                      @OA\Property(property="birth_date", type="string", description="회원 생년월일", example="1990-01-01"),
@@ -289,24 +269,21 @@ class PlayController extends Controller
      *     summary="플레이 시작 API",
      *     tags={"플레이 시작"},
      *     description="플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
-     *     @OA\Parameter(
-     *         description="id 값",
-     *         in="query",
-     *         name="id",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="1", summary="로그인 ID"),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              @OA\Property(property="id", type="int", example="1", description="유저 id"),
+     *          ),
      *     ),
      *     @OA\Response(
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
      *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)"),
      *             @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
-     *                      @OA\Property(property="play_seq_no", type="string", description="플레이 번호", example="1"),
+     *                      @OA\Property(property="id", type="int", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="play_seq_no", type="int", description="플레이 번호", example="1"),
      *                  ),
      *            )
      *         )
@@ -430,7 +407,7 @@ class PlayController extends Controller
      *          response="200",
      *          description="결과값",
      *          @OA\JsonContent(
-     *              @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *              @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
      *              @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지(유저 미존재시 Not Found)"),
      *              @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
@@ -550,33 +527,23 @@ class PlayController extends Controller
      *     summary="플레이 종료 API",
      *     tags={"플레이 종료"},
      *     description="플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
-     *     @OA\Parameter(
-     *         description="요청 id 값",
-     *         in="query",
-     *         name="id",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="1", summary="login ID"),
-     *     ),
-     *     @OA\Parameter(
-     *         description="요청 play_seq_no 값",
-     *         in="query",
-     *         name="play_seq_no",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="5", summary="play seq_no"),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              @OA\Property(property="id", type="int", example="1", description="유저 id"),
+     *              @OA\Property(property="play_seq_no", type="int", example="5", description="플레이 번호"),
+     *          ),
      *     ),
      *     @OA\Response(
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
-     *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_message", type="string", example="Success", description="성공:EMPTY, 실패:에러메세지"),
      *             @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1"),
-     *                      @OA\Property(property="play_seq_no", type="string", description="플레이 번호", example="5"),
-     *                      @OA\Property(property="play_total_time", type="string", description="플레이 시간(초)", example="160"),
+     *                      @OA\Property(property="id", type="int", description="회원 아이디", example="1"),
+     *                      @OA\Property(property="play_seq_no", type="int", description="플레이 번호", example="5"),
+     *                      @OA\Property(property="play_total_time", type="int", description="플레이 시간(초)", example="160"),
      *                  ),
      *            )
      *         )
@@ -675,23 +642,20 @@ class PlayController extends Controller
      *     summary="로그아웃 API",
      *     tags={"로그아웃 "},
      *     description="로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
-     *     @OA\Parameter(
-     *         description="요청 id 값",
-     *         in="query",
-     *         name="id",
-     *         required=true,
-     *         @OA\Schema(type="string"),
-     *         @OA\Examples(example="string", value="1", summary="logout ID"),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              @OA\Property(property="id", type="int", example="1", description="유저 id")
+     *          ),
      *     ),
      *     @OA\Response(
      *         response="200",
      *         description="결과값",
      *         @OA\JsonContent(
-     *             @OA\Property(property="result_code", type="string", example="0", description="성공:0, 실패:-1"),
+     *             @OA\Property(property="result_code", type="int", example="0", description="성공:0, 실패:-1"),
      *             @OA\Property(property="result_message", type="string", example="", description="성공:EMPTY, 실패:에러메세지"),
      *             @OA\Property(property="result_data", type="array",
      *                  @OA\Items(
-     *                      @OA\Property(property="id", type="string", description="회원 아이디", example="1")
+     *                      @OA\Property(property="id", type="int", description="회원 아이디", example="1")
      *                  ),
      *            )
      *         )
@@ -748,7 +712,7 @@ class PlayController extends Controller
 
         return response()->json([
             "result_code" => 0,
-            "result_message" => "success",
+            "result_message" => "Success",
             "result_data" => [
                 "id" => $memberId,
             ],

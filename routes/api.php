@@ -28,7 +28,7 @@ Route::middleware(["logger"])->group(function () {
     Route::post("/editMember", [MemberController::class, "editMember"]);
     Route::post("/deleteMember", [MemberController::class, "deleteMember"]);
 
-    Route::get("/test", [PlayController::class, "test"]);
+    Route::get("/test", [PlayController::class, "testGet"]);
     Route::post("/testPost", [PlayController::class, "testPost"]);
 
     Route::get("/playList", [PlayController::class, "playList"]);
