@@ -4,6 +4,12 @@
 
 @section('content')
 
+<style>
+.tableHeaderFixed tbody {
+    max-height: 400px;
+}
+</style>
+
 <div class="row" id="play-list">
     <div class="col-md-12">
         <div class="card">

@@ -45,3 +45,13 @@ Connect to `http://localhost:3000`
 -   PHP Debug (for `xdebug`)
 
 ## DB Schema
+
+## Surver Apply
+
+```sh
+sudo git pull
+sudo npm run dev
+sudo chown -R www-data:www-data *
+sudo php artisan l5-swagger:generate
+sudo chown -R www-data:www-data *
+```

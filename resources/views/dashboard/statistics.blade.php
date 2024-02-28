@@ -4,6 +4,12 @@
 
 @section('content')
 
+<style>
+.tableHeaderFixed tbody {
+    max-height: 400px;
+}
+</style>
+
 <!-- 대시보드 컨텐츠 -->
 <div class="row">
     <div class="col-md-12">
@@ -22,7 +28,7 @@
     <div class="col-md-4">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px">장소별 분포</div>
+                <div style="font-size:20px;">장소별 분포</div>
             </div>     
             <div class="card-body">                
                 <div id="play-ground-count" ></div>                 
@@ -32,7 +38,7 @@
     <div class="col-md-4">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px">나이별 분포</div>
+                <div style="font-size:20px;">나이별 분포</div>
             </div>     
             <div class="card-body">                
                 <div id="member-age-count"></div>                 
@@ -133,7 +139,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-<script type="text/javascript" src="{{asset('/js/util.js')}}"></script>
+<script type="text/javascript" src="{{mix('/js/util.js')}}"></script>
 
 <script>
 
@@ -308,40 +314,47 @@ function chartPlayGroundCount() {
 }
 
 function drawPlayGroundCount(draw_id, datas, categories) {
-    var options = {
-        series: datas,
-        labels: categories,      
-        dataLabels: {
-            enabled: true,
-            formatter(val, opts) {
-                const name = opts.w.globals.labels[opts.seriesIndex]
-                return [name, val.toFixed(1) + '%']
-            }
-        }, 
-        chart: {            
-            type: 'donut',
-        },        
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 400
-                },
-                legend: {
-                    show: false,
-                    position: 'bottom'
-                }
-            }
-        }],
-        // legend: {
-        //     position: 'right',
-        //     offsetY: 0,
-        //     height: 230,
-        // }
-    };
+    // var options = {
+    //     series: datas,
+    //     labels: categories,      
+    //     dataLabels: {
+    //         enabled: true,
+    //         formatter(val, opts) {
+    //             const name = opts.w.globals.labels[opts.seriesIndex]
+    //             return [name, val.toFixed(1) + '%']
+    //         }
+    //     }, 
+    //     chart: {            
+    //         type: 'donut',
+    //         width: '100%',
+    //         height: '280px',
+    //         // sparkline: {
+    //         //     enabled: true
+    //         // },
+    //     },        
+    //     responsive: [{
+    //         breakpoint: 480,
+    //         options: {
+    //             chart: {
+    //                 width: 400,                    
+    //             },
+    //             legend: {
+    //                 show: false,
+    //                 position: 'bottom'
+    //             }
+    //         }
+    //     }],
+    //     // legend: {
+    //     //     position: 'right',
+    //     //     offsetY: 0,
+    //     //     height: 230,
+    //     // }
+    // };
 
-    var chart = new ApexCharts(draw_id, options);
-    chart.render();
+    // var chart = new ApexCharts(draw_id, options);
+    // chart.render();
+
+    drawNormalDonut(draw_id, datas, categories);
 }
 
 function chartMemberAgeCount() {
@@ -376,37 +389,105 @@ function chartMemberAgeCount() {
 }
 
 function drawMemberAgeCount(draw_id, datas, categories) {
+    // var options = {
+    //     series: datas,
+    //     labels: categories,      
+    //     dataLabels: {
+    //         formatter(val, opts) {
+    //             const name = opts.w.globals.labels[opts.seriesIndex]
+    //             return [name, val.toFixed(1) + '%']
+    //         }
+    //     },
+    //     chart: {            
+    //         width: '100%',
+    //         type: 'pie'
+    //     },     
+    //     theme: {
+    //         monochrome: {
+    //             enabled: true
+    //         }
+    //     },   
+    //     plotOptions: {
+    //         pie: {
+    //             dataLabels: {
+    //             offset: -5
+    //             }
+    //         }
+    //     },
+    //     title: {
+    //       text: ""
+    //     },
+    //     legend: {
+    //       show: false
+    //     }
+    // };
+
+    // var options = {
+    //     series: datas,
+    //     labels: categories,      
+    //     dataLabels: {
+    //         enabled: true,
+    //         formatter(val, opts) {
+    //             const name = opts.w.globals.labels[opts.seriesIndex]
+    //             return [name, val.toFixed(1) + '%']
+    //         }
+    //     }, 
+    //     chart: {            
+    //         type: 'donut',
+    //         width: '100%',
+    //         height: '280px',
+    //         // sparkline: {
+    //         //     enabled: true
+    //         // }
+    //     },     
+    //     responsive: [{
+    //         breakpoint: 480,
+    //         options: {
+    //             chart: {
+    //                 width: 400
+    //             },
+    //             legend: {
+    //                 show: false,
+    //                 position: 'bottom'
+    //             }
+    //         }
+    //     }],        
+    // };
+
+    // var chart = new ApexCharts(draw_id, options);
+    // chart.render();
+
+    drawNormalDonut(draw_id, datas, categories);
+}
+
+function drawNormalDonut(draw_id, datas, categories) {
     var options = {
         series: datas,
         labels: categories,      
         dataLabels: {
+            enabled: true,
             formatter(val, opts) {
                 const name = opts.w.globals.labels[opts.seriesIndex]
                 return [name, val.toFixed(1) + '%']
             }
-        },
+        }, 
         chart: {            
+            type: 'donut',
             width: '100%',
-            type: 'pie'
+            height: '280px',            
         },     
-        theme: {
-            monochrome: {
-                enabled: true
-            }
-        },   
-        plotOptions: {
-            pie: {
-                dataLabels: {
-                offset: -5
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 400
+                },
+                legend: {
+                    show: false,
+                    position: 'bottom'
                 }
             }
-        },
-        title: {
-          text: ""
-        },
-        legend: {
-          show: false
-        }
+        }],        
     };
 
     var chart = new ApexCharts(draw_id, options);
