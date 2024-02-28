@@ -3,6 +3,34 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+function getAppHost()
+{
+    if (isset($_SERVER["HTTP_HOST"])) {
+        return $_SERVER["HTTP_HOST"];
+    } else {
+        return $_SERVER["SERVER_NAME"];
+    }
+}
+
+function getAppProtocol()
+{
+    if (
+        (isset($_SERVER["HTTPS"]) &&
+            ($_SERVER["HTTPS"] == "on" || $_SERVER["HTTPS"] == 1)) ||
+        (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) &&
+            $_SERVER["HTTP_X_FORWARDED_PROTO"] == "https")
+    ) {
+        return "https";
+    } else {
+        return "http";
+    }
+}
+
+function getAppUrl()
+{
+    return getAppProtocol() . "://" . getAppHost();
+}
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -15,7 +43,7 @@ return [
     |
     */
 
-    "name" => env("APP_NAME", "Laravel"),
+    "name" => env("APP_NAME", "SUNG_KYUNG_UNIV"),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +82,7 @@ return [
     |
     */
 
-    "url" => env("APP_URL", "http://localhost"),
+    "url" => getAppUrl(),
 
     "asset_url" => env("ASSET_URL"),
 
@@ -82,7 +110,7 @@ return [
     |
     */
 
-    "locale" => "en",
+    "locale" => "ko",
 
     /*
     |--------------------------------------------------------------------------
@@ -95,7 +123,7 @@ return [
     |
     */
 
-    "fallback_locale" => "en",
+    "fallback_locale" => "ko",
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +136,7 @@ return [
     |
     */
 
-    "faker_locale" => "en_US",
+    "faker_locale" => "ko_KR",
 
     /*
     |--------------------------------------------------------------------------

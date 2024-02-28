@@ -195,7 +195,7 @@ function viewPlayList() {
                 html += `   <td>${item.p_end_date ? item.p_end_date : '-'}</td>`;
                 html += `   <td>${item.p_total_time} sec</td>`;                
                 html += `   <td>${item.p_created_at}</td>`;
-                html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
+                html += `   <td><button type="button" class="btn btn-primary" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
                 html += `</tr>`;
             };
 
@@ -277,12 +277,12 @@ function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
                 html += `   <td>${item.false_count}</td>`; 
                 html += `   <td class="d-flex">`;            
                 html += `       <button type="button"`; 
-                html += `               class="btn btn-success mt-2 flex"`;
+                html += `               class="btn btn-success"`;
                 html += `               data-toggle="modal"`;
                 html += `               data-target="#editPlayDetailModal"`; 
                 html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button>`;
                 html += `       <button type="button"`; 
-                html += `               class="btn btn-danger mt-2 ml-2"`;            
+                html += `               class="btn btn-danger ml-2"`;            
                 html += `               onClick="clickDeletelayDetail('${item.id}', '${playId}', '${memberIds}', '${memberName}', '${playSeqNo}')">삭제</button>`            
                 html += `   </td>;`;
                 html += `</tr>`;                

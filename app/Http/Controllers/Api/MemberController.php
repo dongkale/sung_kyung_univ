@@ -43,6 +43,9 @@ class MemberController extends Controller
                 "sex",
                 "birth_date",
                 DB::raw(
+                    "ROUND((TO_DAYS(NOW()) - (TO_DAYS(birth_date))) / 365) as age"
+                ),
+                DB::raw(
                     "AES_DECRYPT(UNHEX(mobile_phone), '{$dbEncKey}') as mobile_phone"
                 ),
                 "login_flag",

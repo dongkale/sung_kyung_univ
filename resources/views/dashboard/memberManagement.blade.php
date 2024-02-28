@@ -29,14 +29,15 @@
                     </colgroup> --}}
                     <thead>
                         <tr align="center">
-                            <th align="center" width="5%" style="vertical-align: middle;">
+                            <th align="center" width="8%" style="vertical-align: middle;">
                                 <input type="checkbox" id="all-checker-member-list"/><label for="all-checker-member-list"></label>
                             </th>
                             <th width="10%">ID</th>
                             <th>이름</th>
                             <th width="8%">성별</th> 
-                            <th>생년월일</th>
-                            <th>휴대폰번호</th>
+                            <th width="12%">생년월일</th>
+                            <th width="10%">나이</th>
+                            <th width="15%">휴대폰번호</th>
                             <th>생성일</th>
                             <th>*</th>
                         </tr>
@@ -333,15 +334,16 @@ function viewMemberList() {
 
             var result_data = response.result_data; 
             for (let item of result_data) {  
-                html += `<tr align="center" style="vertical-align: middle;">`;
-                html += `   <td width="5%"><input type="checkbox" name="member-list-items" value="${item.id}"><label for="allChecker"></label></td>`;
+                html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;
+                html += `   <td width="8%"><input type="checkbox" name="member-list-items" value="${item.id}"><label for="allChecker"></label></td>`;
                 html += `   <td width="10%">${item.ids}</td>`;
                 html += `   <td>${item.name}</td>`;                
                 html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
-                html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
-                html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;                
+                html += `   <td width="12%">${reformatBirthDate(item.birth_date)}</td>`;
+                html += `   <td width="10%">${item.age}</td>`;
+                html += `   <td width="15%">${formatPhoneNumber(item.mobile_phone)}</td>`;                
                 html += `   <td>${item.created_at}</td>`;
-                html += `   <td><button type="button" class="btn btn-success mt-2" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
+                html += `   <td><button type="button" class="btn btn-success" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
                 html += `</tr>`;
             };
 

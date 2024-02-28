@@ -950,4 +950,62 @@ class PlayController extends Controller
             "result_data" => $data,
         ]);
     }
+
+    public function selectPlayGroundCount(Request $request)
+    {
+        $groundCount = DB::table("play_details as pd")
+            ->select("pd.ground", DB::raw("COUNT(pd.id) as count"))
+            ->where("pd.step", "=", "1")
+            ->groupBy("pd.ground")
+            ->get()
+            ->toArray();
+        if (empty($groundCount)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Not Found",
+            ]);
+        }
+
+        $data = [
+            "ground_count" => $groundCount,
+        ];
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $data,
+        ]);
+    }
+
+    public function selectMemberAgeCount(Request $request)
+    {
+        $memberAgeCount = DB::table("members as m")
+            ->select(
+                DB::raw(
+                    "(ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365)) as age"
+                ),
+                DB::raw("COUNT(m.id) as count")
+            )
+            ->groupByRaw(
+                "(ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365))"
+            )
+            ->get()
+            ->toArray();
+        if (empty($memberAgeCount)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Not Found",
+            ]);
+        }
+
+        $data = [
+            "member_age_count" => $memberAgeCount,
+        ];
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $data,
+        ]);
+    }
 }

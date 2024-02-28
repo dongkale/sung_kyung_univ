@@ -50,4 +50,14 @@ Route::middleware(["logger"])->group(function () {
         PlayController::class,
         "selectPlayCountByMember",
     ]);
+
+    Route::get("/selectPlayGroundCount", [
+        PlayController::class,
+        "selectPlayGroundCount",
+    ]);
+
+    Route::get("/selectMemberAgeCount", [
+        PlayController::class,
+        "selectMemberAgeCount",
+    ]);
 });

@@ -18,6 +18,39 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">장소별 분포</div>
+            </div>     
+            <div class="card-body">                
+                <div id="play-ground-count" ></div>                 
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">나이별 분포</div>
+            </div>     
+            <div class="card-body">                
+                <div id="member-age-count"></div>                 
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">---</div>
+            </div>     
+            <div class="card-body">                
+                <div></div>                 
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row" id="member-list">
     <div class="col-md-12">
         <div class="card">
@@ -34,7 +67,8 @@
                             <th>이름</th>
                             <th width="8%">성별</th> 
                             <th>생년월일</th>
-                            <th>휴대폰번호</th>                            
+                            <th width="10%">나이</th>
+                            <th>휴대폰번호</th>
                             <th>생성일</th>                            
                         </tr>
                     </thead>
@@ -110,7 +144,11 @@ $(document).ready( function() {
 
     viewMemberList();
 
-    chartPlayCountByMember();    
+    chartPlayCountByMember();  
+    
+    chartPlayGroundCount();
+
+    chartMemberAgeCount();
 
     // __testDrawApexChart4(document.querySelector('#apex_chart'));
 } );
@@ -140,6 +178,7 @@ function viewMemberList() {
                 html += `   <td>${item.name}</td>`;                
                 html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
                 html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
+                html += `   <td width="10%">${item.age}</td>`;
                 html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;            
                 html += `   <td>${item.created_at}</td>`;
                 html += `</tr>`;
@@ -236,6 +275,145 @@ function drawPlayCountByMember(draw_id, datas, categories) {
     var chart = new ApexCharts(draw_id, options);
     chart.render();
 }
+
+function chartPlayGroundCount() {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectPlayGroundCount'
+    }).then(function (response) {        
+        var html = '';         
+        
+        var datas = [];
+        var categorys = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.ground_count) {  
+                console.log(item);
+
+                datas.push(item.count);
+                categorys.push(`${item.ground}`);
+            }
+            
+            drawPlayGroundCount(document.querySelector('#play-ground-count'), datas, categorys);
+        } else {
+            alert("처리 중 문제가 발생하였습니다");
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })    
+}
+
+function drawPlayGroundCount(draw_id, datas, categories) {
+    var options = {
+        series: datas,
+        labels: categories,      
+        dataLabels: {
+            enabled: true,
+            formatter(val, opts) {
+                const name = opts.w.globals.labels[opts.seriesIndex]
+                return [name, val.toFixed(1) + '%']
+            }
+        }, 
+        chart: {            
+            type: 'donut',
+        },        
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 400
+                },
+                legend: {
+                    show: false,
+                    position: 'bottom'
+                }
+            }
+        }],
+        // legend: {
+        //     position: 'right',
+        //     offsetY: 0,
+        //     height: 230,
+        // }
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+}
+
+function chartMemberAgeCount() {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectMemberAgeCount'
+    }).then(function (response) {        
+        var html = '';         
+        
+        var datas = [];
+        var categorys = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.member_age_count) {  
+                console.log(item);
+
+                datas.push(item.count);
+                categorys.push(`${item.age}세`);
+            }
+            
+            drawMemberAgeCount(document.querySelector('#member-age-count'), datas, categorys);
+        } else {
+            alert("처리 중 문제가 발생하였습니다");
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })    
+}
+
+function drawMemberAgeCount(draw_id, datas, categories) {
+    var options = {
+        series: datas,
+        labels: categories,      
+        dataLabels: {
+            formatter(val, opts) {
+                const name = opts.w.globals.labels[opts.seriesIndex]
+                return [name, val.toFixed(1) + '%']
+            }
+        },
+        chart: {            
+            width: '100%',
+            type: 'pie'
+        },     
+        theme: {
+            monochrome: {
+                enabled: true
+            }
+        },   
+        plotOptions: {
+            pie: {
+                dataLabels: {
+                offset: -5
+                }
+            }
+        },
+        title: {
+          text: ""
+        },
+        legend: {
+          show: false
+        }
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function playCountChart(draw_id) {
     var options = {
