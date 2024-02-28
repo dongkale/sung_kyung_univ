@@ -75,10 +75,11 @@ CREATE TABLE `play_logs` (
     `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
     `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
 
-    `data` JSON
+    `stat_data` JSON
     
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     
     PRIMARY KEY (`id`),    
-    INDEX `IX_play_details_play_id`(`play_id`) USING BTREE
+    INDEX `IX_play_details_member_id`(`member_id`) USING BTREE,
+    INDEX `IX_play_details_seq_no`(`seq_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

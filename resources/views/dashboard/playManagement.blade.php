@@ -58,7 +58,7 @@
                             <th>시작 시간</th>
                             <th>종료 시간</th>
                             <th>실패 횟수</th>
-                            <th>*</th>
+                            <th>*</th>                            
                         </tr>
                     </thead>
                     <tbody>
@@ -142,16 +142,49 @@ function reformatBirthDate(input) {
 }
 
 function viewPlayList() {
-    $.ajax({
-        url: '/api/playList',
-        type: 'GET',
-        dataType: 'json',        
-        success: function(data) {            
-            var html = '';            
+    // $.ajax({
+    //     url: '/api/playList',
+    //     type: 'GET',
+    //     dataType: 'json',        
+    //     success: function(data) {            
+    //         var html = '';            
 
+    //         $("#play-list").find("tbody").children().remove();
+
+    //         for (let item of data) {                
+    //             html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class" id="tr_${item.p_id}">`;
+    //             html += `   <td width="7%">${item.m_ids}</td>`;
+    //             html += `   <td>${item.m_name}</td>`;                
+    //             html += `   <td width="8%">${(item.m_sex == 'M') ? '남성' : '여성'}</td>`;                
+    //             html += `   <td>${reformatBirthDate(item.m_birth_date)}</td>`;
+    //             html += `   <td>${item.p_seq_no}</td>`;
+    //             html += `   <td>${item.p_start_date ? item.p_start_date : '-'}</td>`;
+    //             html += `   <td>${item.p_end_date ? item.p_end_date : '-'}</td>`;
+    //             html += `   <td>${item.p_total_time} sec</td>`;                
+    //             html += `   <td>${item.p_created_at}</td>`;
+    //             html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
+    //             html += `</tr>`;
+    //         };
+
+    //         $("#play-list").find("tbody").append(html);
+    //     },
+    //     error: function(r, s, e) {
+    //         alert("처리 중 문제가 발생하였습니다");
+    //         console.log(e);
+    //     }
+    // });
+
+    callAPI({
+        method: 'GET',
+        url: '/api/playList'
+    }).then(function (response) {        
+        var html = '';            
+
+        if (response.result_code == 0) {
             $("#play-list").find("tbody").children().remove();
 
-            for (let item of data) {                
+            var result_data = response.result_data; 
+            for (let item of result_data) {
                 html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class" id="tr_${item.p_id}">`;
                 html += `   <td width="7%">${item.m_ids}</td>`;
                 html += `   <td>${item.m_name}</td>`;                
@@ -167,28 +200,71 @@ function viewPlayList() {
             };
 
             $("#play-list").find("tbody").append(html);
-        },
-        error: function(r, s, e) {
+        } else {
             alert("처리 중 문제가 발생하였습니다");
-            console.log(e);
         }
-    });
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })
 }
 
 function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
-    $.ajax({
+    // $.ajax({
+    //     url: '/api/playDetail',
+    //     type: 'GET',
+    //     dataType: 'json',  
+    //     data: {
+    //         "play_id": playId
+    //     },      
+    //     success: function(data) {            
+    //         var html = '';            
+
+    //         $("#play-detail").find("tbody").children().remove();
+
+    //         for (let item of data) {                
+    //             html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;                
+    //             html += `   <td width="7%">${memberIds}</td>`;
+    //             html += `   <td>${memberName}</td>`;
+    //             html += `   <td>${playSeqNo}</td>`;
+    //             html += `   <td>${item.ground}</td>`;
+    //             html += `   <td>${item.step}</td>`;
+    //             html += `   <td>${item.actual_play_time} sec</td>`;
+    //             html += `   <td>${item.start_date ? item.start_date : '-'}</td>`;
+    //             html += `   <td>${item.end_date ? item.end_date : '-'}</td>`;
+    //             html += `   <td>${item.false_count}</td>`; 
+    //             html += `   <td><button type="button"`; 
+    //             html += `               class="btn btn-danger mt-2"`;
+    //             html += `               data-toggle="modal"`;
+    //             html += `               data-target="#editPlayDetailModal"`; 
+    //             html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button></td>;`;
+    //             html += `</tr>`;
+    //         };
+
+    //         $("#play-detail").find("tbody").append(html);
+    //     },
+    //     error: function(r, s, e) {
+    //         alert("처리 중 문제가 발생하였습니다");
+    //         console.log(e);
+    //     }
+    // });
+
+    callAPI({
+        method: 'GET',
         url: '/api/playDetail',
-        type: 'GET',
-        dataType: 'json',  
         data: {
             "play_id": playId
-        },      
-        success: function(data) {            
-            var html = '';            
+        }
+    }).then(function (response) {        
+        var html = '';            
 
+        if (response.result_code == 0) {
             $("#play-detail").find("tbody").children().remove();
 
-            for (let item of data) {                
+            var result_data = response.result_data; 
+            for (let item of result_data) {          
                 html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;                
                 html += `   <td width="7%">${memberIds}</td>`;
                 html += `   <td>${memberName}</td>`;
@@ -199,21 +275,27 @@ function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
                 html += `   <td>${item.start_date ? item.start_date : '-'}</td>`;
                 html += `   <td>${item.end_date ? item.end_date : '-'}</td>`;
                 html += `   <td>${item.false_count}</td>`; 
-                html += `   <td><button type="button"`; 
-                html += `               class="btn btn-danger mt-2"`;
+                html += `   <td class="d-flex">`;            
+                html += `       <button type="button"`; 
+                html += `               class="btn btn-success mt-2 flex"`;
                 html += `               data-toggle="modal"`;
                 html += `               data-target="#editPlayDetailModal"`; 
-                html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button></td>;`;
-                html += `</tr>`;
+                html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button>`;
+                html += `       <button type="button"`; 
+                html += `               class="btn btn-danger mt-2 ml-2"`;            
+                html += `               onClick="clickDeletelayDetail('${item.id}', '${playId}', '${memberIds}', '${memberName}', '${playSeqNo}')">삭제</button>`            
+                html += `   </td>;`;
+                html += `</tr>`;                
             };
 
             $("#play-detail").find("tbody").append(html);
-        },
-        error: function(r, s, e) {
-            alert("처리 중 문제가 발생하였습니다");
-            console.log(e);
         }
-    });
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+            console.log(error);
+    }).finally(function () {
+        ;
+    })
 }
 
 function clickPlayDetail(playId, memberIds, memberName, playSeqNo) {    
@@ -281,6 +363,29 @@ function clickSubmitPlayDetail() {
     }).catch(function (error) {
         console.log(error);
         alert(`수정에 실패하였습니다.`)
+    }).finally(function () {
+        viewPlayDetail(playId, memberIds, memberName, playSeqNo);
+    })
+}
+
+function clickDeletelayDetail(playDetailId, playId, memberIds, memberName, playSeqNo) {
+    console.log(`clickDelete: ${playDetailId}`);
+
+    if( !confirm("정말로 삭제하시겠습니까?") ) {
+        return;
+    }
+
+    callAPI({
+        method: 'POST',
+        url: "/api/deletePlayDetail",
+        data: {
+            "id": playDetailId
+        }
+    }).then(function (response) {
+        alert(`삭제 되었습니다.`);
+    }).catch(function (error) {
+        console.log(error);
+        alert(`삭제에 실패하였습니다.`)
     }).finally(function () {
         viewPlayDetail(playId, memberIds, memberName, playSeqNo);
     })

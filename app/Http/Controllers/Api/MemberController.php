@@ -52,7 +52,11 @@ class MemberController extends Controller
             ->get()
             ->toArray();
 
-        return response()->json($selectData);
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $selectData,
+        ]);
     }
 
     public function addMember(Request $request)

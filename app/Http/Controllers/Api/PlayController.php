@@ -24,7 +24,7 @@ use Exception;
  */
 class PlayController extends Controller
 {
-    const LOGIN_PLAY_START_GAP_TIME = 6000;
+    const LOGIN_PLAY_START_GAP_TIME = 60000;
 
     // tags : 메인 타이틀
     // description: API 설명
@@ -147,7 +147,7 @@ class PlayController extends Controller
      * @OA\Post (
      *     path="/api/playLogin",
      *     summary="로그인 API",
-     *     tags={"로그인"},
+     *     tags={"1. 로그인"},
      *     description="로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
@@ -267,7 +267,7 @@ class PlayController extends Controller
      * @OA\Post (
      *     path="/api/playStart",
      *     summary="플레이 시작 API",
-     *     tags={"플레이 시작"},
+     *     tags={"2. 플레이 시작"},
      *     description="플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
@@ -385,12 +385,12 @@ class PlayController extends Controller
      * @OA\Post (
      *     path="/api/playStat",
      *     summary="플레이 통계 API",
-     *     tags={"플레이 통계"},
+     *     tags={"3. 플레이 통계"},
      *     description="플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
-     *              @OA\Property(property="id", type="string", example="1", description="유저 id"),
-     *              @OA\Property(property="play_seq_no", type="string", example="5", description="플레이 번호"),
+     *              @OA\Property(property="id", type="int", example="1", description="유저 id"),
+     *              @OA\Property(property="play_seq_no", type="int", example="5", description="플레이 번호"),
      *              @OA\Property(property="play_stats", type="array",
      *                  @OA\Items(
      *                      @OA\Property(property="ground", type="string", description="장소(현관,거실,...)", example="거실"),
@@ -459,6 +459,7 @@ class PlayController extends Controller
             Log::error(
                 "[playStat][Check] id: {$memberId}, play_seq_no: : {$playSeqNo} invalid"
             );
+
             return response()->json([
                 "result_code" => -1,
                 "result_message" => "Invalid play_seq_no",
@@ -511,6 +512,12 @@ class PlayController extends Controller
             );
         }
 
+        DB::table("play_logs")->insertGetId([
+            "member_id" => $memberId,
+            "seq_no" => $playSeqNo,
+            "stat_data" => json_encode($playStats),
+        ]);
+
         return response()->json([
             "result_code" => 0,
             "result_message" => "Success",
@@ -525,7 +532,7 @@ class PlayController extends Controller
      * @OA\Post (
      *     path="/api/playEnd",
      *     summary="플레이 종료 API",
-     *     tags={"플레이 종료"},
+     *     tags={"4. 플레이 종료"},
      *     description="플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
@@ -640,7 +647,7 @@ class PlayController extends Controller
      * @OA\Post (
      *     path="/api/playLogout",
      *     summary="로그아웃 API",
-     *     tags={"로그아웃 "},
+     *     tags={"5. 로그아웃 "},
      *     description="로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
@@ -741,7 +748,11 @@ class PlayController extends Controller
             ->get()
             ->toArray();
 
-        return response()->json($selectData);
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $selectData,
+        ]);
     }
 
     public function playDetail(Request $request)
@@ -773,7 +784,11 @@ class PlayController extends Controller
             ->get()
             ->toArray();
 
-        return response()->json($selectData);
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $selectData,
+        ]);
     }
 
     public function editPlayDetail(Request $request)
@@ -857,28 +872,37 @@ class PlayController extends Controller
             );
         }
 
-        $id = $request->id;
+        $playDetailId = $request->id;
 
-        $selectData = DB::table("play_details")
-            ->where("id", "=", $id)
-            ->first();
+        $dbPlayDetail = DB::table("play_details")
+            ->select("*")
+            ->where("id", "=", $playDetailId);
+
+        $playDetail = $dbPlayDetail->first();
+        if (empty($playDetail)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "not found play_detail_id",
+            ]);
+        }
+
+        Log::info(
+            "[DeletePlayDetail] Backup: id: {$playDetailId}, ground:{$playDetail->ground}, step: {$playDetail->step}, false_count: {$playDetail->false_count}, start_date: {$playDetail->start_date}, end_date: {$playDetail->end_date}"
+        );
 
         DB::beginTransaction();
         try {
-            DB::table("play_details")
-                ->where("id", "=", $id)
-                ->delete();
+            $dbPlayDetail->where("id", "=", $playDetailId)->delete();
+
             DB::commit();
 
-            Log::info(
-                "[PlayDetail][Delete] id: {$id}, ground:{$selectData->ground}, step: {$selectData->step}, false_count: {$selectData->false_count}, start_date: {$selectData->start_date}, end_date: {$selectData->end_date}"
-            );
+            Log::info("[DeletePlayDetail] id: {$playDetailId}");
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error("[PlayDetail][Delete] Exception: " . $e->getMessage());
+            Log::error("[PlayDetail] Exception: " . $e->getMessage());
             Log::error(
-                "[PlayDetail][Delete] Callstack:" . $e->getTraceAsString()
+                "[DeletePlayDetail] Callstack:" . $e->getTraceAsString()
             );
 
             return response()->json(
@@ -890,47 +914,40 @@ class PlayController extends Controller
         return response()->json([
             "result_code" => 0,
             "result_message" => "success",
-            "id" => $id,
+            "result_data" => [
+                "play_detail_id" => $playDetailId,
+            ],
         ]);
     }
 
-    // DB::beginTransaction();
-    // try {
-    //     DB::table("play_details")
-    //         ->where("id", "=", $memberId)
-    //         ->where("ids", "=", $memberIds)
-    //         ->update([
-    //             "name" => $memberName,
-    //             "email" => DB::raw(
-    //                 "HEX(AES_ENCRYPT('{$memberEmail}', '{$dbEncKey}'))"
-    //             ),
-    //             "sex" => $memberSex,
-    //             "birth_date" => $memberBirthDate,
-    //             "mobile_phone" => DB::raw(
-    //                 "HEX(AES_ENCRYPT('{$memberMobilePhone}', '{$dbEncKey}'))"
-    //             ),
-    //         ]);
+    public function selectPlayCountByMember(Request $request)
+    {
+        $playCount = DB::table("members as m")
+            ->select(
+                "p.member_id",
+                "m.ids",
+                "m.name",
+                DB::raw("COUNT(p.id) as count")
+            )
+            ->join("plays as p", "m.id", "=", "p.member_id")
+            ->groupBy("p.member_id")
+            ->get()
+            ->toArray();
+        if (empty($playCount)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Not Found",
+            ]);
+        }
 
-    //     DB::commit();
+        $data = [
+            "play_count" => $playCount,
+        ];
 
-    //     Log::info(
-    //         "[Member][Edit] id: {$memberId}, Ids:{$memberIds}, Name: {$memberName}"
-    //     );
-    // } catch (Exception $e) {
-    //     DB::rollback();
-
-    //     Log::error("[Member][Edit] Exception: " . $e->getMessage());
-    //     Log::error("[Member][Edit] Callstack:" . $e->getTraceAsString());
-
-    //     return response()->json(
-    //         ["result_code" => -1, "result_message" => "Exception"],
-    //         500
-    //     );
-    // }
-
-    // return response()->json([
-    //     "result_code" => 0,
-    //     "result_message" => "success",
-    //     "ids" => $memberIds,
-    // ]);
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $data,
+        ]);
+    }
 }

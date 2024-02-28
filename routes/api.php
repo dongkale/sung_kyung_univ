@@ -35,10 +35,19 @@ Route::middleware(["logger"])->group(function () {
     Route::get("/playDetail", [PlayController::class, "playDetail"]);
 
     Route::post("/editPlayDetail", [PlayController::class, "editPlayDetail"]);
+    Route::post("/deletePlayDetail", [
+        PlayController::class,
+        "deletePlayDetail",
+    ]);
 
     Route::post("/playLogin", [PlayController::class, "playLogin"]);
     Route::post("/playStart", [PlayController::class, "playStart"]);
     Route::post("/playStat", [PlayController::class, "playStat"]);
     Route::post("/playEnd", [PlayController::class, "playEnd"]);
     Route::post("/playLogout", [PlayController::class, "playLogout"]);
+
+    Route::get("/selectPlayCountByMember", [
+        PlayController::class,
+        "selectPlayCountByMember",
+    ]);
 });

@@ -292,35 +292,69 @@ function reformatBirthDate(input) {
 }
 
 function viewMemberList() {
-    $.ajax({
-        url: '/api/memberList',
-        type: 'GET',
-        dataType: 'json',        
-        success: function(data) {            
-            var html = '';            
+    // $.ajax({
+    //     url: '/api/memberList',
+    //     type: 'GET',
+    //     dataType: 'json',        
+    //     success: function(data) {            
+    //         var html = '';            
 
+    //         $("#member-list").find("tbody").children().remove();
+
+    //         for (let item of data) {                
+    //             html += `<tr align="center" style="vertical-align: middle;">`;
+    //             html += `   <td width="5%"><input type="checkbox" name="member-list-items" value="${item.id}"><label for="allChecker"></label></td>`;
+    //             html += `   <td width="10%">${item.ids}</td>`;
+    //             html += `   <td>${item.name}</td>`;                
+    //             html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;                
+    //             html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
+    //             html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;                
+    //             html += `   <td>${item.created_at}</td>`;
+    //             html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
+    //             html += `</tr>`;
+    //         };
+
+    //         $("#member-list").find("tbody").append(html);
+    //     },
+    //     error: function(r, s, e) {
+    //         alert("처리 중 문제가 발생하였습니다");
+    //         console.log(e);
+    //     }
+    // });
+
+    callAPI({
+        method: 'GET',
+        url: '/api/memberList'
+    }).then(function (response) {        
+        var html = '';            
+
+        if (response.result_code == 0) {
             $("#member-list").find("tbody").children().remove();
 
-            for (let item of data) {                
+            var result_data = response.result_data; 
+            for (let item of result_data) {  
                 html += `<tr align="center" style="vertical-align: middle;">`;
                 html += `   <td width="5%"><input type="checkbox" name="member-list-items" value="${item.id}"><label for="allChecker"></label></td>`;
                 html += `   <td width="10%">${item.ids}</td>`;
                 html += `   <td>${item.name}</td>`;                
-                html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;                
+                html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
                 html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
                 html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;                
                 html += `   <td>${item.created_at}</td>`;
-                html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
+                html += `   <td><button type="button" class="btn btn-success mt-2" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
                 html += `</tr>`;
             };
 
             $("#member-list").find("tbody").append(html);
-        },
-        error: function(r, s, e) {
+        } else {
             alert("처리 중 문제가 발생하였습니다");
-            console.log(e);
         }
-    });
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })
 }
 
 // $('#myModal').on('shown.bs.modal', function () {
@@ -396,6 +430,10 @@ function clickDeleteMember() {
     }
 
     console.log(deleteList);
+
+    if( !confirm("정말로 삭제하시겠습니까?") ) {
+        return;
+    }
 
     callAPI({
         method: 'POST',

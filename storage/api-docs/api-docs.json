@@ -167,7 +167,7 @@
         "/api/playLogin": {
             "post": {
                 "tags": [
-                    "로그인"
+                    "1. 로그인"
                 ],
                 "summary": "로그인 API",
                 "description": "로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
@@ -255,7 +255,7 @@
         "/api/playStart": {
             "post": {
                 "tags": [
-                    "플레이 시작"
+                    "2. 플레이 시작"
                 ],
                 "summary": "플레이 시작 API",
                 "description": "플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
@@ -323,7 +323,7 @@
         "/api/playStat": {
             "post": {
                 "tags": [
-                    "플레이 통계"
+                    "3. 플레이 통계"
                 ],
                 "summary": "플레이 통계 API",
                 "description": "플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
@@ -335,12 +335,12 @@
                                 "properties": {
                                     "id": {
                                         "description": "유저 id",
-                                        "type": "string",
+                                        "type": "integer",
                                         "example": "1"
                                     },
                                     "play_seq_no": {
                                         "description": "플레이 번호",
-                                        "type": "string",
+                                        "type": "integer",
                                         "example": "5"
                                     },
                                     "play_stats": {
@@ -436,7 +436,7 @@
         "/api/playEnd": {
             "post": {
                 "tags": [
-                    "플레이 종료"
+                    "4. 플레이 종료"
                 ],
                 "summary": "플레이 종료 API",
                 "description": "플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
@@ -514,7 +514,7 @@
         "/api/playLogout": {
             "post": {
                 "tags": [
-                    "로그아웃 "
+                    "5. 로그아웃 "
                 ],
                 "summary": "로그아웃 API",
                 "description": "로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",

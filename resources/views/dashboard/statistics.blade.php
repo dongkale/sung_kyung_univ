@@ -4,40 +4,16 @@
 
 @section('content')
 
-<style>
-.tableHeaderFixed {
-    width: 100%;
-}
-.tableHeaderFixed thead, tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;  
-}
-
-.tableHeaderFixed tbody tr td{
-    vertical-align: middle;
-}
-
-.table tr td {
-    align:center;
-    vertical-align: middle;
-}
-
-.tableHeaderFixed tbody {
-    display: block;
-    overflow-y: auto;
-    table-layout: fixed;  
-}
-.tableHeaderFixed tbody {
-    max-height: 300px;
-}
-</style>
-
 <!-- 대시보드 컨텐츠 -->
 <div class="row">
     <div class="col-md-12">
-        <div class="card">            
-            <div id="apex_chart" ></div> 
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">사용자 별 사용 횟수</div>
+            </div>     
+            <div class="card-body">                
+                <div id="play-count-by-member" ></div>                 
+            </div>
         </div>
     </div>
 </div>
@@ -54,11 +30,11 @@
                 <table class="table table-borderd table-striped tableHeaderFixed">
                     <thead>
                         <tr align="center">                            
-                            <th>ID</th>
+                            <th width="10%">ID</th>
                             <th>이름</th>
-                            <th>성별</th>
-                            <th>휴대폰번호</th>
+                            <th width="8%">성별</th> 
                             <th>생년월일</th>
+                            <th>휴대폰번호</th>                            
                             <th>생성일</th>                            
                         </tr>
                     </thead>
@@ -134,7 +110,9 @@ $(document).ready( function() {
 
     viewMemberList();
 
-    __testDrawApexChart4(document.querySelector('#apex_chart'));
+    chartPlayCountByMember();    
+
+    // __testDrawApexChart4(document.querySelector('#apex_chart'));
 } );
 
 function reformatBirthDate(input) {
@@ -145,34 +123,168 @@ function reformatBirthDate(input) {
     return year + '-' + day + '-' + month;
 }
 
-function viewMemberList() {
-    $.ajax({
-        url: '/api/memberList',
-        type: 'GET',
-        dataType: 'json',        
-        success: function(data) {            
-            var html = '';            
+function viewMemberList() {   
+    callAPI({
+        method: 'GET',
+        url: '/api/memberList'
+    }).then(function (response) {        
+        var html = '';            
 
+        if (response.result_code == 0) {            
             $("#member-list").find("tbody").children().remove();
 
-            for (let item of data) {                
+            var result_data = response.result_data; 
+            for (let item of result_data) {  
                 html += `<tr align="center" style="vertical-align: middle;">`;
-                html += `   <td>${item.ids}</td>`;
+                html += `   <td width="10%">${item.ids}</td>`;
                 html += `   <td>${item.name}</td>`;                
-                html += `   <td>${item.sex}</td>`;                
-                html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;
+                html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
                 html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
+                html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;            
                 html += `   <td>${item.created_at}</td>`;
                 html += `</tr>`;
             };
 
             $("#member-list").find("tbody").append(html);
-        },
-        error: function(r, s, e) {
+        } else {
             alert("처리 중 문제가 발생하였습니다");
-            console.log(e);
+        }    
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+            console.log(error);
+    }).finally(function () {
+        ;
+    })
+}
+
+function chartPlayCountByMember() {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectPlayCountByMember'
+    }).then(function (response) {        
+        var html = '';         
+        
+        var datas = [];
+        var categorys = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.play_count) {  
+                console.log(item);
+
+                datas.push(item.count);
+                categorys.push(`${item.name}(${item.ids})`);
+            }
+            
+            drawPlayCountByMember(document.querySelector('#play-count-by-member'), datas, categorys);
+        } else {
+            alert("처리 중 문제가 발생하였습니다");
         }
-    });
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })
+}
+
+function drawPlayCountByMember(draw_id, datas, categories) {
+    var options = {
+        series: [{
+            name: 'Play',
+            data: datas
+        }],
+        chart: {
+            type: 'bar',
+            height: 200
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        xaxis: {                        
+            categories: categories
+        },
+        yaxis: {
+            title: {
+                text: '횟수'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " 회"
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+}
+
+function playCountChart(draw_id) {
+    var options = {
+        series: [{
+            name: 'Net Profit',
+            data: [0, 6]
+        }],
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        xaxis: {            
+            // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            categories: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+        },
+        yaxis: {
+            title: {
+                text: '횟수'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return "$ " + val + " thousands"
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
 }
 
 function __testDrawApexChart4(draw_id) {
