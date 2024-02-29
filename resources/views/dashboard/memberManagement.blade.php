@@ -18,7 +18,6 @@
             </div>            
             <div class="card-body">                
                 <div class="text-right float-right mb-2"> 
-                    {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#memberAddModal">추가</button> --}}
                     <button type="button" class="btn btn-primary" onclick="clickAddMember()">추가</button>
                     <button type="button" class="btn btn-danger" onclick="clickDeleteMember()">삭제</button>
                 </div>
@@ -299,36 +298,6 @@ function reformatBirthDate(input) {
 }
 
 function viewMemberList() {
-    // $.ajax({
-    //     url: '/api/memberList',
-    //     type: 'GET',
-    //     dataType: 'json',        
-    //     success: function(data) {            
-    //         var html = '';            
-
-    //         $("#member-list").find("tbody").children().remove();
-
-    //         for (let item of data) {                
-    //             html += `<tr align="center" style="vertical-align: middle;">`;
-    //             html += `   <td width="5%"><input type="checkbox" name="member-list-items" value="${item.id}"><label for="allChecker"></label></td>`;
-    //             html += `   <td width="10%">${item.ids}</td>`;
-    //             html += `   <td>${item.name}</td>`;                
-    //             html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;                
-    //             html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
-    //             html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;                
-    //             html += `   <td>${item.created_at}</td>`;
-    //             html += `   <td><button type="button" class="btn btn-primary mt-2" onclick="clickEditMember('${item.id}', '${item.ids}', '${item.name}', '${item.mobile_phone}', '${item.birth_date}', '${item.sex}')">수정</button></td>;`
-    //             html += `</tr>`;
-    //         };
-
-    //         $("#member-list").find("tbody").append(html);
-    //     },
-    //     error: function(r, s, e) {
-    //         alert("처리 중 문제가 발생하였습니다");
-    //         console.log(e);
-    //     }
-    // });
-
     callAPI({
         method: 'GET',
         url: '/api/memberList'
@@ -439,7 +408,7 @@ function clickDeleteMember() {
 
     console.log(deleteList);
 
-    if( !confirm("정말로 삭제하시겠습니까?") ) {
+    if (!confirm("정말로 삭제하시겠습니까?")) {
         return;
     }
 
@@ -447,7 +416,7 @@ function clickDeleteMember() {
         method: 'POST',
         url: "/api/deleteMember",
         data: {
-            "idList": deleteList
+            "id_list": deleteList
         }
     }).then(function (response) {
         alert(`삭제 되었습니다.`);
@@ -528,8 +497,8 @@ function clickSaveMember() {
             "name": name,
             "email": email,
             "sex": gender,
-            "birthDate": birthDate,
-            "mobilePhone": mobilePhone,                                
+            "birth_date": birthDate,
+            "mobile_phone": mobilePhone,                                
         }
     }).then(function (response) {
         alert(`${title} 되었습니다.`);
@@ -546,90 +515,6 @@ function clickSaveMember() {
 function clickCloseSaveMember() {
     $("#save-member").hide();
 }
-
-// function clickSubmitEditMember() {    
-//     if (!validateMemberData()) {
-//         return;
-//     }
-
-//     var name = $.trim($("#member-name").val());
-//     var email = "test@test.com";
-//     var mobilePhone = $.trim($("#member-mobile-phone").val());
-//     var birthDate = $.trim($("#member-birth-date").val());
-//     var gender = $('input[name="gender"]:checked').val();
-    
-//     callAPI({
-//         method: 'POST',
-//         url: "/api/editMember",
-//         data: {
-//             "name": name,
-//             "email": email,
-//             "sex": gender,
-//             "birthDate": birthDate,
-//             "mobilePhone": mobilePhone,                                
-//         }
-//     }).then(function (response) {
-//         alert('수정되었습니다.');
-//     }).catch(function (error) {
-//         console.log(error);
-//         alert('수정에 실패하였습니다.')
-//     }).finally(function () {
-//         viewMemberList();
-
-//         clickCloseAddEditMember();
-//     })
-// };
-
-// function clickCloseAddMember() {
-//     $("#add-member").hide();
-// }
-
-// function clickCloseEditMember() {
-//     $("#edit-member").hide();
-// }
-
-// function validateAddMember() {
-//     var name = $.trim($("#add-member-name").val());
-//     if (name === "") {
-//         alert("이름을 입력해주세요.");
-//         $("#add-member-name").focus();
-//         return false;
-//     }
-
-//     var mobilePhone = $.trim($("#add-member-mobile-phone").val());
-//     if (mobilePhone === "") {
-//         alert("휴대폰번호을 입력해주세요.");
-//         $("#add-member-mobile-phone").focus();
-//         return false;
-//     }
-
-//     if (!isValidPhoneNumber(mobilePhone)) {
-//         alert("지정한 형식의 휴대폰번호을 입력해주세요.('-' 제외)");
-//         $("#add-member-mobile-phone").focus();
-//         return false;
-//     }
-
-//     var birthDate = $.trim($("#add-member-birth-date").val());
-//     if (birthDate === "") {
-//         alert("생년월일을 입력해주세요.(YYYYMMDD 형식)");
-//         $("#add-member-birth-date").focus();
-//         return false;
-//     }
-
-//     if (!isValidDateOfBirth(birthDate)) {
-//         alert("지정한 형식의 생년월일을 입력해주세요.(YYYYMMDD 형식)");
-//         $("#add-member-birth-date").focus();
-//         return false;
-//     }
-
-//     var gender = $('input[name="gender"]:checked').val();
-//     if (!gender) {
-//         alert("성별을 선택해주세요.");        
-//         return false;
-//     }
-
-//     return true;
-// }
 
 </script>
 

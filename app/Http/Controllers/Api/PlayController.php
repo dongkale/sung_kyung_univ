@@ -18,9 +18,21 @@ use Exception;
 
 /**
  * @OA\Info(
- *     title="BIBLE UNIVERSITY", version="0.1", description="Play API Documentation"
+ *     version="1.0.0",
+ *     title="Bible University Api Documentation",
+ *     description="Bible University Api Documentation",
+ *     @OA\Contact(
+ *         name="Lee Dong Kwan",
+ *         email="dklee@lennon.co.kr"
+ *     ),
+ *     @OA\License(
+ *         name="Apache 2.0",
+ *         url="http://www.apache.org/licenses/LICENSE-2.0.html"
+ *     )
  * ),
- * @OA\PathItem(path="/api")
+ * @OA\Server(
+ *     url="/api",
+ * ),
  */
 class PlayController extends Controller
 {
@@ -30,7 +42,7 @@ class PlayController extends Controller
     // description: API 설명
     /**
      * @OA\Get (
-     *     path="/api/test",
+     *     path="/test",
      *     tags={"[TEST] API Get 테스트"},
      *     summary="API Get 테스트",
      *     description="API Get 테스트",
@@ -92,7 +104,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/testPost",
+     *     path="/testPost",
      *     tags={"[TEST] API Post 테스트"},
      *     summary="API Post 테스트",
      *     description="API Post 테스트",
@@ -145,7 +157,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/playLogin",
+     *     path="/playLogin",
      *     summary="로그인 API",
      *     tags={"1. 로그인"},
      *     description="로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
@@ -265,7 +277,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/playStart",
+     *     path="/playStart",
      *     summary="플레이 시작 API",
      *     tags={"2. 플레이 시작"},
      *     description="플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
@@ -383,7 +395,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/playStat",
+     *     path="/playStat",
      *     summary="플레이 통계 API",
      *     tags={"3. 플레이 통계"},
      *     description="플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
@@ -530,7 +542,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/playEnd",
+     *     path="/playEnd",
      *     summary="플레이 종료 API",
      *     tags={"4. 플레이 종료"},
      *     description="플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
@@ -645,7 +657,7 @@ class PlayController extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/playLogout",
+     *     path="/playLogout",
      *     summary="로그아웃 API",
      *     tags={"5. 로그아웃 "},
      *     description="로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
@@ -919,7 +931,6 @@ class PlayController extends Controller
             ],
         ]);
     }
-
     public function selectPlayCountByMember(Request $request)
     {
         $playCount = DB::table("members as m")
@@ -1000,6 +1011,35 @@ class PlayController extends Controller
 
         $data = [
             "member_age_count" => $memberAgeCount,
+        ];
+
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $data,
+        ]);
+    }
+
+    public function selectGrounFalseCount(Request $request)
+    {
+        $groundFalseCount = DB::table("play_details as pd")
+            ->select(
+                "pd.ground",
+                DB::raw("COUNT(pd.id) as count"),
+                DB::raw("SUM(pd.false_count) as false_count")
+            )
+            ->groupBy("pd.ground")
+            ->get()
+            ->toArray();
+        if (empty($groundFalseCount)) {
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => "Not Found",
+            ]);
+        }
+
+        $data = [
+            "ground_count" => $groundFalseCount,
         ];
 
         return response()->json([

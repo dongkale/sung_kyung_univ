@@ -31,7 +31,7 @@
                 <div style="font-size:20px;">장소별 분포</div>
             </div>     
             <div class="card-body">                
-                <div id="play-ground-count" ></div>                 
+                <div id="play-ground-count" ></div>
             </div>
         </div>
     </div>
@@ -41,17 +41,17 @@
                 <div style="font-size:20px;">나이별 분포</div>
             </div>     
             <div class="card-body">                
-                <div id="member-age-count"></div>                 
+                <div id="member-age-count"></div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px">---</div>
+                <div style="font-size:20px">장소별 실패 횟수</div>
             </div>     
             <div class="card-body">                
-                <div></div>                 
+                <div id="ground-false-count"></div>
             </div>
         </div>
     </div>
@@ -85,58 +85,6 @@
         </div>
 </div>
 
-{{-- <div class="row">
-    <div class="col-md-2">
-        <div class="card">
-            <div>Some text here</div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card">
-            <div>Some text here</div>
-        </div>
-    </div>
-</div> --}}
-
-{{-- <div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                카드 1
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                카드 2
-            </div>
-        </div>
-    </div>
-    <!-- 추가적인 대시보드 카드 -->
-</div> --}}
-
-{{-- <div class="row">
-    <div class="col-md-3">
-        <div class="card">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h5 class="card-title">Primary card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h5 class="card-title">Primary card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script type="text/javascript" src="{{mix('/js/util.js')}}"></script>
@@ -156,7 +104,7 @@ $(document).ready( function() {
 
     chartMemberAgeCount();
 
-    // __testDrawApexChart4(document.querySelector('#apex_chart'));
+    chartGroundFalseCount();    
 } );
 
 function reformatBirthDate(input) {
@@ -234,52 +182,54 @@ function chartPlayCountByMember() {
 }
 
 function drawPlayCountByMember(draw_id, datas, categories) {
-    var options = {
-        series: [{
-            name: 'Play',
-            data: datas
-        }],
-        chart: {
-            type: 'bar',
-            height: 200
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                endingShape: 'rounded'
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-        },
-        xaxis: {                        
-            categories: categories
-        },
-        yaxis: {
-            title: {
-                text: '횟수'
-            }
-        },
-        fill: {
-            opacity: 1
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return val + " 회"
-                }
-            }
-        }
-    };
+    // var options = {
+    //     series: [{
+    //         name: 'Play',
+    //         data: datas
+    //     }],
+    //     chart: {
+    //         type: 'bar',
+    //         height: 200
+    //     },
+    //     plotOptions: {
+    //         bar: {
+    //             horizontal: false,
+    //             columnWidth: '55%',
+    //             endingShape: 'rounded'
+    //         },
+    //     },
+    //     dataLabels: {
+    //         enabled: false
+    //     },
+    //     stroke: {
+    //         show: true,
+    //         width: 2,
+    //         colors: ['transparent']
+    //     },
+    //     xaxis: {                        
+    //         categories: categories
+    //     },
+    //     yaxis: {
+    //         title: {
+    //             text: '횟수'
+    //         }
+    //     },
+    //     fill: {
+    //         opacity: 1
+    //     },
+    //     tooltip: {
+    //         y: {
+    //             formatter: function (val) {
+    //                 return val + " 회"
+    //             }
+    //         }
+    //     }
+    // };
 
-    var chart = new ApexCharts(draw_id, options);
-    chart.render();
+    // var chart = new ApexCharts(draw_id, options);
+    // chart.render();
+
+    drawNormalBar(draw_id, datas, categories);
 }
 
 function chartPlayGroundCount() {
@@ -388,6 +338,35 @@ function chartMemberAgeCount() {
     })    
 }
 
+function chartGroundFalseCount() {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectGrounFalseCount'
+    }).then(function (response) {        
+        var html = '';         
+        
+        var datas = [];
+        var categorys = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.ground_count) {                  
+                datas.push(item.false_count);
+                categorys.push(item.ground);
+            }
+            
+            drawNormalBar(document.querySelector('#ground-false-count'), datas, categorys);
+        } else {            
+            console.log("처리 중 문제가 발생하였습니다");
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })
+}
+
 function drawMemberAgeCount(draw_id, datas, categories) {
     // var options = {
     //     series: datas,
@@ -463,7 +442,7 @@ function drawMemberAgeCount(draw_id, datas, categories) {
 function drawNormalDonut(draw_id, datas, categories) {
     var options = {
         series: datas,
-        labels: categories,      
+        labels: categories,
         dataLabels: {
             enabled: true,
             formatter(val, opts) {
@@ -483,11 +462,60 @@ function drawNormalDonut(draw_id, datas, categories) {
                     width: 400
                 },
                 legend: {
-                    show: false,
+                    show: true,
                     position: 'bottom'
                 }
             }
         }],        
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+}
+
+function drawNormalBar(draw_id, datas, categories) {
+    var options = {
+        series: [{
+            name: 'Play',
+            data: datas
+        }],
+        chart: {
+            type: 'bar',
+            height: 200
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        xaxis: {                        
+            categories: categories
+        },
+        yaxis: {
+            title: {
+                text: '횟수'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " 회"
+                }
+            }
+        }
     };
 
     var chart = new ApexCharts(draw_id, options);

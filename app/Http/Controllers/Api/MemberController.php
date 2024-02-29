@@ -68,8 +68,8 @@ class MemberController extends Controller
             "name" => "required",
             "email" => "required",
             "sex" => "required",
-            "birthDate" => "required",
-            "mobilePhone" => "required",
+            "birth_date" => "required",
+            "mobile_phone" => "required",
         ]);
 
         if ($validator->fails()) {
@@ -82,8 +82,8 @@ class MemberController extends Controller
         $memberName = $request->name;
         $memberEmail = $request->email;
         $memberSex = $request->sex;
-        $memberBirthDate = $request->birthDate;
-        $memberMobilePhone = $request->mobilePhone;
+        $memberBirthDate = $request->birth_date;
+        $memberMobilePhone = $request->mobile_phone;
 
         if (!CommonUtils::isValidEmail($memberEmail)) {
             Log::error("[Member][Add] " . "Invalid Email");
@@ -152,7 +152,9 @@ class MemberController extends Controller
         return response()->json([
             "result_code" => 0,
             "result_message" => "success",
-            "ids" => $ids,
+            "result_data" => [
+                "ids" => $ids,
+            ],
         ]);
     }
     public function editMember(Request $request)
@@ -162,8 +164,8 @@ class MemberController extends Controller
             "name" => "required",
             "email" => "required",
             "sex" => "required",
-            "birthDate" => "required",
-            "mobilePhone" => "required",
+            "birth_date" => "required",
+            "mobile_phone" => "required",
         ]);
 
         if ($validator->fails()) {
@@ -178,8 +180,8 @@ class MemberController extends Controller
         $memberName = $request->name;
         $memberEmail = $request->email;
         $memberSex = $request->sex;
-        $memberBirthDate = $request->birthDate;
-        $memberMobilePhone = $request->mobilePhone;
+        $memberBirthDate = $request->birth_date;
+        $memberMobilePhone = $request->mobile_phone;
 
         if (!CommonUtils::isValidEmail($memberEmail)) {
             Log::error("[Member][Edit] " . "Invalid Email");
@@ -245,14 +247,16 @@ class MemberController extends Controller
         return response()->json([
             "result_code" => 0,
             "result_message" => "success",
-            "ids" => $memberIds,
+            "result_data" => [
+                "ids" => $memberIds,
+            ],
         ]);
     }
 
     public function deleteMember(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "idList" => "required",
+            "id_list" => "required",
         ]);
 
         if ($validator->fails()) {
@@ -260,8 +264,7 @@ class MemberController extends Controller
             return view("errors.error", ["errors" => $validator->errors()]);
         }
 
-        $memberIdList = $request->idList;
-        // $memberIds = $request->ids;
+        $memberIdList = $request->id_list;
 
         $selectData = DB::table("members")
             ->select("*")
@@ -300,7 +303,9 @@ class MemberController extends Controller
         return response()->json([
             "result_code" => 0,
             "result_message" => "success",
-            "id_list" => $memberIdListStr,
+            "result_data" => [
+                "id_list" => $memberIdListStr,
+            ],
         ]);
     }
 }
