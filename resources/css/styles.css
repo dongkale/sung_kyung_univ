@@ -1,3 +1,36 @@
+.row.content {
+    height: 550px;
+}
+.sidebar {
+    background-color: #f1f1f1;
+    height: 100%;
+    min-height: 100vh; /* 최소 높이를 화면의 전체 높이로 설정 */
+}
+@media screen and (max-width: 767px) {
+    .row.content {
+        height: auto;
+    }
+}
+.header-top {
+    background-color: white;
+}
+.card {
+    margin-bottom: 20px;
+    padding: 15px;
+    /* padding-left: 15px;
+            padding-right: 15px; */
+}
+/* 버튼 스타일 */
+.btn-primary {
+    background-color: #007bff; /* 파란색 */
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* 파란색 (hover 시) */
+    border-color: #0056b3;
+}
+
 .tableHeaderFixed {
     width: 100%;
 }
@@ -13,7 +46,6 @@ tbody tr {
 }
 
 .table tr td {
-    align: center;
     vertical-align: middle;
 }
 
@@ -28,4 +60,12 @@ tbody tr {
 
 tr.tr-hover-class:hover {
     background: lightgrey !important;
+}
+
+.nav-item .nav-link {
+    font-size: larger;
+}
+
+.nav-item ul li a {
+    font-size: larger;
 }

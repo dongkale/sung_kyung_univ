@@ -27,38 +27,10 @@
     <!-- Style CSS -->
     <link href="{{ mix('/css/styles.css') }}" rel="stylesheet">
 
-    <script type="text/javascript" src="{{mix('/js/util.js')}}"></script>
-
-    <style>
-        .row.content {height: 550px}
-        .sidebar {
-            background-color: #f1f1f1;
-            height: 100%;
-            min-height: 100vh; /* 최소 높이를 화면의 전체 높이로 설정 */
-        }
-        @media screen and (max-width: 767px) {
-            .row.content {height: auto;} 
-        }
-        .card {
-            margin-bottom: 20px;
-            padding: 15px;
-            /* padding-left: 15px;
-            padding-right: 15px; */
-        }
-        /* 버튼 스타일 */
-        .btn-primary {
-            background-color: #007bff; /* 파란색 */
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3; /* 파란색 (hover 시) */
-            border-color: #0056b3;
-        }            
-    </style>
+    <script type="text/javascript" src="{{mix('/js/util.js')}}"></script>    
 </head>
-<body>
 
+<body>
     <div class="container-fluid">
         <div class="row">
             @include('partials.sidebar')

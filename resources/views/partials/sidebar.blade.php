@@ -1,4 +1,4 @@
-<nav class="col-md-2 d-none d-md-block bg-light sidebar d-none py-4"> 
+<nav class="col-md-2 d-none d-md-block bg-light sidebar d-none py-4 sticky-top"> 
     <div class="sidebar-sticky list-group ">
     {{-- <div class="col-sm-2 sidenav d-none d-sm-block sidebar py-4"> --}}
         <h2><a href="{{ url('/dashboard') }}">BIBLE UNIVERSITY</a></h2>
@@ -9,7 +9,7 @@
             </li>
 
             @if(Auth::user())
-                @if (Route::has('login'))                
+                @if (Route::has('login'))
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/dashboard/memberManagement') }}" data-menu="memberManagement">사용자
                     </a>

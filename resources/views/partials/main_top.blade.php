@@ -1,5 +1,5 @@
-<div class="d-flex col-md-12 justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">대시보드</h1>
+<div class="d-flex col-md-12 justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom sticky-top header-top">
+    <h1 class="h2">Dashboard</h1>
     <!-- 다른 컨텐츠 상단에 추가할 수 있는 요소들 --> 
     <div class="row">        
         @guest

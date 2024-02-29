@@ -32,7 +32,7 @@ class DashboardController extends Controller
         $members = DB::table("members")->get();
 
         return view("dashboard.memberManagement", [
-            "menu" => "userManagement",
+            "menu" => "memberManagement",
             "members" => $members,
         ]);
     }
