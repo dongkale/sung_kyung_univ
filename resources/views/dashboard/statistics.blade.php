@@ -91,11 +91,7 @@
 
 <script>
 
-$(document).ready( function() {
-    var menu = "{{$menu}}";
-
-    selectMenu(menu);
-
+$(document).ready( function() {    
     viewMemberList();
 
     chartPlayCountByMember();  

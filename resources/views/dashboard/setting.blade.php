@@ -8,9 +8,7 @@
 <script>
 
 $(document).ready( function() {    
-    var menu = "{{$menu}}";
-
-    selectMenu(menu);
+    ;
 } );
 
 </script>

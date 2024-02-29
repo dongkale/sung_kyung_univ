@@ -68,4 +68,27 @@ tr.tr-hover-class:hover {
 
 .nav-item ul li a {
     font-size: larger;
+    margin-left: 15px;
+}
+
+/* .nav-item ul li a:hover {
+    border-right: solid 3px #0056b3;
+} */
+
+.nav-item .nav-link[aria-expanded="false"] .submenu-icon::after {
+    content: "\f0d7";
+    font-family: "Font Awesome\ 5 Free";
+    font-weight: 900; /* Fix version 5.0.9 */
+    display: inline;
+    text-align: right;
+    padding-left: 10px;
+}
+
+.nav-item .nav-link[aria-expanded="true"] .submenu-icon::after {
+    content: "\f0da";
+    font-family: "Font Awesome\ 5 Free";
+    font-weight: 900; /* Fix version 5.0.9 */
+    display: inline;
+    text-align: right;
+    padding-left: 10px;
 }

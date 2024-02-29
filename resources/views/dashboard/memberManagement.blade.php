@@ -281,11 +281,7 @@
 const SAVE_MODE_ADD = "add";
 const SAVE_MODE_EDIT = "edit";
 
-$(document).ready( function() {    
-    var menu = "{{$menu}}";
-
-    selectMenu(menu);
-
+$(document).ready( function() {        
     viewMemberList();
 } );
 

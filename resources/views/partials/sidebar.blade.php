@@ -37,8 +37,8 @@
 
 $(document).ready( function() {    
     settingMenu();
-
-    selectMenu("dashboard");    
+    
+    selectMenu();    
 } );
 
 function settingMenu() {
@@ -52,17 +52,23 @@ function settingMenu() {
     });    
 }
 
-function selectMenu(select) {
-    $('.list-group li').each(function(index, item) {                
-        var menuName = $(this).find('a').data('menu');
+function selectMenu() {
+    var url = window.location.href;
+    var activePage = url;
 
-        if (select == menuName) {
+    $('.nav-item').each(function () {
+         var linkPage = $(this).find('a').attr('href');
+         console.log(`linkPage ==> ${linkPage}`);       
+        
+         if (activePage == linkPage) {            
+            // $(this).addClass('active');
             $(this).find('a').addClass('active');
-        } else {
+            console.log(`activePage ==> ${linkPage}`);
+         } else {
+            //$(this).removeClass('active');
             $(this).find('a').removeClass('active');
-        }
-        console.log(menuName);
-    });
+         }
+     });
 }
 
 </script>

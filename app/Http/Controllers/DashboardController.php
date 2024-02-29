@@ -14,7 +14,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view("dashboard.index", ["menu" => "dashboard"]);
+        return view("dashboard.index");
     }
 
     public function statistics()
@@ -22,7 +22,6 @@ class DashboardController extends Controller
         $members = DB::table("members")->get();
 
         return view("dashboard.statistics", [
-            "menu" => "statistics",
             "members" => $members,
         ]);
     }
@@ -32,7 +31,6 @@ class DashboardController extends Controller
         $members = DB::table("members")->get();
 
         return view("dashboard.memberManagement", [
-            "menu" => "memberManagement",
             "members" => $members,
         ]);
     }
@@ -42,13 +40,12 @@ class DashboardController extends Controller
         $members = DB::table("plays")->get();
 
         return view("dashboard.playManagement", [
-            "menu" => "playManagement",
             "members" => $members,
         ]);
     }
 
     public function setting()
     {
-        return view("dashboard.setting", ["menu" => "setting"]);
+        return view("dashboard.setting");
     }
 }
