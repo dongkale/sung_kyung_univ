@@ -964,15 +964,22 @@ class PlayController extends Controller
 
     public function selectPlayGroundCount(Request $request)
     {
+        $memberId = $request->member_id;
+
         $groundCount = DB::table("play_details as pd")
             ->select("pd.ground", DB::raw("COUNT(pd.id) as count"))
             ->where("pd.step", "=", "1")
+            ->when($memberId, function ($q, $memberId) {
+                return $q->whereRaw(
+                    "pd.play_id IN (SELECT id FROM plays WHERE member_id = {$memberId})"
+                );
+            })
             ->groupBy("pd.ground")
             ->get()
             ->toArray();
         if (empty($groundCount)) {
             return response()->json([
-                "result_code" => -1,
+                "result_code" => 0,
                 "result_message" => "Not Found",
             ]);
         }
@@ -1020,18 +1027,57 @@ class PlayController extends Controller
         ]);
     }
 
-    public function selectGrounFalseCount(Request $request)
+    // public function selectGrounFalseCount(Request $request)
+    // {
+    //     $groundFalseCount = DB::table("play_details as pd")
+    //         ->select(
+    //             "pd.ground",
+    //             DB::raw("COUNT(pd.id) as count"),
+    //             DB::raw("SUM(pd.false_count) as false_count")
+    //         )
+    //         ->groupBy("pd.ground")
+    //         ->get()
+    //         ->toArray();
+    //     if (empty($groundFalseCount)) {
+    //         return response()->json([
+    //             "result_code" => -1,
+    //             "result_message" => "Not Found",
+    //         ]);
+    //     }
+
+    //     $data = [
+    //         "ground_count" => $groundFalseCount,
+    //     ];
+
+    //     return response()->json([
+    //         "result_code" => 0,
+    //         "result_message" => "Success",
+    //         "result_data" => $data,
+    //     ]);
+    // }
+
+    public function selectGrounSuccessFalseCount(Request $request)
     {
-        $groundFalseCount = DB::table("play_details as pd")
+        $memberId = $request->member_id;
+
+        $groundSuccessFalseCount = DB::table("play_details as pd")
             ->select(
                 "pd.ground",
                 DB::raw("COUNT(pd.id) as count"),
-                DB::raw("SUM(pd.false_count) as false_count")
+                DB::raw("SUM(IF(pd.false_count = 0, 1, 0)) as success_count"),
+                DB::raw(
+                    "SUM(IF(pd.false_count > 0, pd.false_count, 0)) as false_count"
+                )
             )
+            ->when($memberId, function ($q, $memberId) {
+                return $q->whereRaw(
+                    "pd.play_id IN (SELECT id FROM plays WHERE member_id = {$memberId})"
+                );
+            })
             ->groupBy("pd.ground")
             ->get()
             ->toArray();
-        if (empty($groundFalseCount)) {
+        if (empty($groundSuccessFalseCount)) {
             return response()->json([
                 "result_code" => -1,
                 "result_message" => "Not Found",
@@ -1039,7 +1085,7 @@ class PlayController extends Controller
         }
 
         $data = [
-            "ground_count" => $groundFalseCount,
+            "stat" => $groundSuccessFalseCount,
         ];
 
         return response()->json([

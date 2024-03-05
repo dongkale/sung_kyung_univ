@@ -33,6 +33,25 @@
 </head>
 
 <body>
+@php
+function getMainState($mainMenu, $code, $rv = "") {
+    $v = "";
+    if( $mainMenu == $code ) {
+        $v = $rv;
+    }
+    return $v;
+}
+function getSubState($subMenu, $code, $rv = "") {
+    $v = "";
+    if( $subMenu == $code ) {
+        $v = $rv;
+    }
+    return $v;
+}
+$mainMenu = isset($mainMenuCode) ? $mainMenuCode : "";
+$subMenu = isset($subMenuCode) ? $subMenuCode : "";
+@endphp
+
     <div class="container-fluid">
         <div class="row">
             @include('partials.sidebar')

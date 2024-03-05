@@ -48,10 +48,10 @@
     <div class="col-md-4">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px">장소별 실패 횟수</div>
+                <div style="font-size:20px">장소별 성공/실패 횟수</div>
             </div>     
             <div class="card-body">                
-                <div id="ground-false-count"></div>
+                <div id="ground-success-false-count"></div>
             </div>
         </div>
     </div>
@@ -69,12 +69,14 @@
                 <table class="table table-borderd table-striped tableHeaderFixed">
                     <thead>
                         <tr align="center">                            
-                            <th width="10%">ID</th>
+                            <th width="8%">ID</th>
                             <th>이름</th>
                             <th width="8%">성별</th> 
                             <th>생년월일</th>
                             <th width="10%">나이</th>
                             <th>휴대폰번호</th>
+                            <th>사용 횟수</th>
+                            <th>사용 시간</th>
                             <th>생성일</th>                            
                         </tr>
                     </thead>
@@ -83,6 +85,40 @@
                 </table>                
             </div>
         </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px;">장소별 분포</div>
+            </div>     
+            <div class="card-body">                
+                <div id="play-ground-count-user" ></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px;">--- 분포</div>
+            </div>     
+            <div class="card-body">                
+                <div id="member-age-count-user"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">   
+            <div class="card-header" style="font-size:14px">                
+                <div style="font-size:20px">장소별 성공/실패 횟수</div>
+            </div>     
+            <div class="card-body">                
+                <div id="ground-success-false-count-user"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -100,7 +136,8 @@ $(document).ready( function() {
 
     chartMemberAgeCount();
 
-    chartGroundFalseCount();    
+    // chartGroundFalseCount();    
+    chartGroundSuccessFalseCount();
 } );
 
 function reformatBirthDate(input) {
@@ -124,23 +161,25 @@ function viewMemberList() {
             var result_data = response.result_data; 
             for (let item of result_data) {  
                 html += `<tr align="center" style="vertical-align: middle;">`;
-                html += `   <td width="10%">${item.ids}</td>`;
+                html += `   <td width="8%">${item.ids}</td>`;
                 html += `   <td>${item.name}</td>`;                
                 html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
                 html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
                 html += `   <td width="10%">${item.age}</td>`;
                 html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;            
+                html += `   <td>${item.play_count}</td>`;
+                html += `   <td>${item.play_total_time/60} 분</td>`;
                 html += `   <td>${item.created_at}</td>`;
                 html += `</tr>`;
             };
 
             $("#member-list").find("tbody").append(html);
         } else {
-            alert("처리 중 문제가 발생하였습니다");
+            console.log("처리 중 문제가 발생하였습니다");
         }    
     }).catch(function (error) {
         alert("처리 중 문제가 발생하였습니다");
-            console.log(error);
+        console.log(error);
     }).finally(function () {
         ;
     })
@@ -167,7 +206,7 @@ function chartPlayCountByMember() {
             
             drawPlayCountByMember(document.querySelector('#play-count-by-member'), datas, categorys);
         } else {
-            alert("처리 중 문제가 발생하였습니다");
+            console.log("처리 중 문제가 발생하였습니다");
         }
     }).catch(function (error) {
         alert("처리 중 문제가 발생하였습니다");
@@ -225,13 +264,23 @@ function drawPlayCountByMember(draw_id, datas, categories) {
     // var chart = new ApexCharts(draw_id, options);
     // chart.render();
 
-    drawNormalBar(draw_id, datas, categories);
+    // var reMakeDatas = [];
+
+    //for (let item of datas) {  
+
+    //    reMakeDatas.push({name:'Play', data: item});};
+    //}
+
+    drawNormalBar(draw_id, "", 230, [{name:'Play', data: datas}], categories);
 }
 
 function chartPlayGroundCount() {
     callAPI({
         method: 'GET',
-        url: '/api/selectPlayGroundCount'
+        url: '/api/selectPlayGroundCount',
+        // data : {
+        //     member_id: 15
+        // }
     }).then(function (response) {        
         var html = '';         
         
@@ -249,7 +298,7 @@ function chartPlayGroundCount() {
             
             drawPlayGroundCount(document.querySelector('#play-ground-count'), datas, categorys);
         } else {
-            alert("처리 중 문제가 발생하였습니다");
+            console.log("처리 중 문제가 발생하였습니다");
         }
     }).catch(function (error) {
         alert("처리 중 문제가 발생하였습니다");
@@ -324,7 +373,7 @@ function chartMemberAgeCount() {
             
             drawMemberAgeCount(document.querySelector('#member-age-count'), datas, categorys);
         } else {
-            alert("처리 중 문제가 발생하였습니다");
+            console.log("처리 중 문제가 발생하였습니다");
         }
     }).catch(function (error) {
         alert("처리 중 문제가 발생하였습니다");
@@ -334,25 +383,59 @@ function chartMemberAgeCount() {
     })    
 }
 
-function chartGroundFalseCount() {
+// function chartGroundFalseCount() {
+//     callAPI({
+//         method: 'GET',
+//         url: '/api/selectGrounFalseCount'
+//     }).then(function (response) {        
+//         var html = '';         
+        
+//         var datas = [];
+//         var categorys = [];
+
+//         if (response.result_code == 0) {            
+//             var result_data = response.result_data; 
+//             for (let item of result_data.ground_count) {                  
+//                 datas.push(item.false_count);
+//                 categorys.push(item.ground);
+//             }
+            
+//             drawNormalBar(document.querySelector('#ground-false-count'), [{name:'Play', data: datas}], categorys);
+//         } else {            
+//             console.log("처리 중 문제가 발생하였습니다");
+//         }
+//     }).catch(function (error) {
+//         alert("처리 중 문제가 발생하였습니다");
+//         console.log(error);
+//     }).finally(function () {
+//         ;
+//     })
+// }
+
+function chartGroundSuccessFalseCount() {
     callAPI({
         method: 'GET',
-        url: '/api/selectGrounFalseCount'
+        url: '/api/selectGrounSuccessFalseCount',
+        // data : {
+        //     member_id: 99
+        // }
     }).then(function (response) {        
         var html = '';         
         
-        var datas = [];
+        var successDatas = [];
+        var falseDatas = [];
         var categorys = [];
-
+        
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
-            for (let item of result_data.ground_count) {                  
-                datas.push(item.false_count);
+            for (let item of result_data.stat) {                  
+                successDatas.push(item.success_count);
+                falseDatas.push(item.false_count);
                 categorys.push(item.ground);
             }
-            
-            drawNormalBar(document.querySelector('#ground-false-count'), datas, categorys);
-        } else {            
+
+            drawNormalBar(document.querySelector('#ground-success-false-count'), "", 210, [{name:'성공', data: successDatas}, {name:'실패', data: falseDatas}], categorys);            
+        } else {                        
             console.log("처리 중 문제가 발생하였습니다");
         }
     }).catch(function (error) {
@@ -449,7 +532,10 @@ function drawNormalDonut(draw_id, datas, categories) {
         chart: {            
             type: 'donut',
             width: '100%',
-            height: '280px',            
+            height: '200px',
+            toolbar: {
+                show: true
+            }
         },     
         responsive: [{
             breakpoint: 480,
@@ -469,15 +555,16 @@ function drawNormalDonut(draw_id, datas, categories) {
     chart.render();
 }
 
-function drawNormalBar(draw_id, datas, categories) {
+function drawNormalBar(draw_id, title, height, datas, categories) {
     var options = {
-        series: [{
-            name: 'Play',
-            data: datas
-        }],
+        series: datas,        
         chart: {
             type: 'bar',
-            height: 200
+            height: height
+        },
+        title: {
+            text: title,
+            align: 'left'
         },
         plotOptions: {
             bar: {

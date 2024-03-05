@@ -61,8 +61,13 @@ Route::middleware(["logger"])->group(function () {
         "selectMemberAgeCount",
     ]);
 
-    Route::get("/selectGrounFalseCount", [
+    // Route::get("/selectGrounFalseCount", [
+    //     PlayController::class,
+    //     "selectGrounFalseCount",
+    // ]);
+
+    Route::get("/selectGrounSuccessFalseCount", [
         PlayController::class,
-        "selectGrounFalseCount",
+        "selectGrounSuccessFalseCount",
     ]);
 });

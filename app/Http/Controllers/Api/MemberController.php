@@ -34,23 +34,29 @@ class MemberController extends Controller
     {
         $dbEncKey = env("DB_ENCRYPT_KEY");
 
-        $selectData = DB::table("members")
+        $selectData = DB::table("members as m")
             ->select(
-                "id",
-                "ids",
-                DB::raw("AES_DECRYPT(UNHEX(email), '{$dbEncKey}') as email"),
-                "name",
-                "sex",
-                "birth_date",
+                "m.id",
+                "m.ids",
+                DB::raw("AES_DECRYPT(UNHEX(m.email), '{$dbEncKey}') as email"),
+                "m.name",
+                "m.sex",
+                "m.birth_date",
                 DB::raw(
-                    "ROUND((TO_DAYS(NOW()) - (TO_DAYS(birth_date))) / 365) as age"
+                    "ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365) as age"
                 ),
                 DB::raw(
-                    "AES_DECRYPT(UNHEX(mobile_phone), '{$dbEncKey}') as mobile_phone"
+                    "AES_DECRYPT(UNHEX(m.mobile_phone), '{$dbEncKey}') as mobile_phone"
                 ),
-                "login_flag",
-                "last_login_at",
-                "created_at"
+                "m.login_flag",
+                "m.last_login_at",
+                DB::raw(
+                    "(SELECT COUNT(*) FROM plays WHERE member_id = m.id) as play_count"
+                ),
+                DB::raw(
+                    "(SELECT SUM(total_time) FROM plays WHERE member_id = m.id) as play_total_time"
+                ),
+                "m.created_at"
             )
             ->get()
             ->toArray();
