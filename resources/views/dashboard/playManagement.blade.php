@@ -31,7 +31,7 @@
                             <th>사용 번호</th>
                             <th>시작 시간</th>
                             <th>종료 시간</th>
-                            <th>총 사용 시간</th>
+                            <th>총 사용 시간(분)</th>
                             <th>생성일</th>
                             <th>*</th>
                         </tr>
@@ -61,7 +61,7 @@
                             <th>장소</th>
                             <th>순서</th>
                             <th>사용 시간</th> 
-                            <th>시작 시간</th>
+                            <th>시작 시간(초)</th>
                             <th>종료 시간</th>
                             <th>실패 횟수</th>
                             <th>*</th>                            
@@ -163,7 +163,7 @@ function viewPlayList() {
                 html += `   <td>${item.p_seq_no}</td>`;
                 html += `   <td>${item.p_start_date ? item.p_start_date : '-'}</td>`;
                 html += `   <td>${item.p_end_date ? item.p_end_date : '-'}</td>`;
-                html += `   <td>${item.p_total_time} sec</td>`;                
+                html += `   <td>${Math.floor(item.p_total_time / 60)} min</td>`;                
                 html += `   <td>${item.p_created_at}</td>`;
                 html += `   <td><button type="button" class="btn btn-primary" onclick="clickPlayDetail('${item.p_id}', '${item.m_ids}', '${item.m_name}', '${item.p_seq_no}')">자세히</button></td>;`
                 html += `</tr>`;

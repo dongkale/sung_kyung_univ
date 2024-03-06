@@ -90,39 +90,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card">   
-            <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px;">장소별 분포</div>
-            </div>     
-            <div class="card-body">                
-                <div id="play-ground-count-user" ></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">   
-            <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px;">--- 분포</div>
-            </div>     
-            <div class="card-body">                
-                <div id="member-age-count-user"></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">   
-            <div class="card-header" style="font-size:14px">                
-                <div style="font-size:20px">장소별 성공/실패 횟수</div>
-            </div>     
-            <div class="card-body">                
-                <div id="ground-success-false-count-user"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <form id="memberListWithStatExportForm" method="POST" action="/api/memberListWithStatExport">
     @csrf
 </form>
