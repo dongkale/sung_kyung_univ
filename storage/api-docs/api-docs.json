@@ -1,20 +1,32 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "BIBLE UNIVERSITY",
-        "description": "Play API Documentation",
-        "version": "0.1"
+        "title": "Bible University Api Documentation",
+        "description": "Bible University Api Documentation",
+        "contact": {
+            "name": "Lee Dong Kwan",
+            "email": "dklee@lennon.co.kr"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
     "paths": {
-        "/api": {},
-        "/api/test": {
+        "/test": {
             "get": {
                 "tags": [
                     "[TEST] API Get 테스트"
                 ],
                 "summary": "API Get 테스트",
                 "description": "API Get 테스트",
-                "operationId": "41730d654a828ff059993a1d819c38d3",
+                "operationId": "7c6f693909120310f908b4ae3d7c2e45",
                 "parameters": [
                     {
                         "name": "param",
@@ -91,14 +103,14 @@
                 }
             }
         },
-        "/api/testPost": {
+        "/testPost": {
             "post": {
                 "tags": [
                     "[TEST] API Post 테스트"
                 ],
                 "summary": "API Post 테스트",
                 "description": "API Post 테스트",
-                "operationId": "a5c35502d1e1827fd69c02f46a85e382",
+                "operationId": "f62ed821df2f7f0931be8b763f51c2d5",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -164,14 +176,14 @@
                 }
             }
         },
-        "/api/playLogin": {
+        "/playLogin": {
             "post": {
                 "tags": [
                     "1. 로그인"
                 ],
                 "summary": "로그인 API",
                 "description": "로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
-                "operationId": "b1dad4ee382560a02e12b8dee5a65edf",
+                "operationId": "280b9e2462c53c168aaa6aa58e5f0f6e",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -252,14 +264,14 @@
                 }
             }
         },
-        "/api/playStart": {
+        "/playStart": {
             "post": {
                 "tags": [
                     "2. 플레이 시작"
                 ],
                 "summary": "플레이 시작 API",
                 "description": "플레이 시작, 해당  Id(ids 아님) 플레이 시작을 알린다, 반환값으로 플레이 번호. 플레이 번호 이후 플레이 종료나 통계정보를 넘길때 사용한다",
-                "operationId": "629d5580dfe64003e1f84089762238fc",
+                "operationId": "5c5e255674fd6e3529514f65f63c2398",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -320,14 +332,14 @@
                 }
             }
         },
-        "/api/playStat": {
+        "/playStat": {
             "post": {
                 "tags": [
                     "3. 플레이 통계"
                 ],
                 "summary": "플레이 통계 API",
                 "description": "플레이 통계, 해당  Id(ids 아님), play_seq_no(플레이 번호), play_stats(플레이 통계)를 갱신한다, 기존 있는 정보는 삭제하고 새로 업데이트를 진행한다.",
-                "operationId": "ceb901b7d1f697e655152a2441980f2c",
+                "operationId": "38d7340d72632888865b755171bcd936",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -433,14 +445,14 @@
                 }
             }
         },
-        "/api/playEnd": {
+        "/playEnd": {
             "post": {
                 "tags": [
                     "4. 플레이 종료"
                 ],
                 "summary": "플레이 종료 API",
                 "description": "플레이 종료를 알린다, Id(ids 아님) 와 플레이 번호(PlayStart 때 반환값(play_seq_no))로 요청을 한다, 반환값은 플레이 시간(초), 서버단에서 플레이 시간 계산한다",
-                "operationId": "dc2996b1e5c7762c747c9d381ba38a0d",
+                "operationId": "ea70ced83dd521c1ff0a5d228d2456ae",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -511,14 +523,14 @@
                 }
             }
         },
-        "/api/playLogout": {
+        "/playLogout": {
             "post": {
                 "tags": [
                     "5. 로그아웃 "
                 ],
                 "summary": "로그아웃 API",
                 "description": "로그아웃을 한다, 내부적으로 로그인 플레그를 셋팅한다",
-                "operationId": "4840f5d0d8af6524fa1be9b2c358c5bc",
+                "operationId": "698bbc87386ba67361a72eee83b61c9b",
                 "requestBody": {
                     "content": {
                         "application/json": {
