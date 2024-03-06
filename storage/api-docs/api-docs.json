@@ -193,11 +193,6 @@
                                         "description": "유저 ids(001, 002)",
                                         "type": "string",
                                         "example": "1"
-                                    },
-                                    "name": {
-                                        "description": "유저 이름",
-                                        "type": "string",
-                                        "example": "홍길동"
                                     }
                                 },
                                 "type": "object"

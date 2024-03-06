@@ -163,8 +163,7 @@ class PlayController extends Controller
      *     description="로그인 시도, 해당 Ids와 이름으로 로그인 시도, 여기서 ids 는 대쉬보드상의 ID",
      *     @OA\RequestBody(
      *          @OA\JsonContent(
-     *              @OA\Property(property="ids", type="string", example="1", description="유저 ids(001, 002)"),
-     *              @OA\Property(property="name", type="string", example="홍길동", description="유저 이름"),
+     *              @OA\Property(property="ids", type="string", example="001", description="유저 ids(001, 002)"),
      *          ),
      *     ),
      *     @OA\Response(
@@ -188,13 +187,12 @@ class PlayController extends Controller
      */
     public function playLogin(Request $request)
     {
-        // 1. request: ids, name 으로 로그인
+        // 1. request: ids로 로그인
         // 2. process: members 테이블에서 확인
         // 3. response: id, name, email, birth_date
 
         $validator = Validator::make($request->all(), [
             "ids" => "required",
-            "name" => "required",
         ]);
 
         if ($validator->fails()) {
@@ -205,7 +203,6 @@ class PlayController extends Controller
         }
 
         $memberIds = $request->ids;
-        $memberName = $request->name;
 
         $dbEncKey = env("DB_ENCRYPT_KEY");
 
@@ -225,7 +222,6 @@ class PlayController extends Controller
                 "created_at"
             )
             ->where("ids", "=", $memberIds)
-            ->where("name", "=", $memberName)
             ->get()
             ->first();
         if (empty($selectData)) {
@@ -240,7 +236,6 @@ class PlayController extends Controller
             // login 시도 시간 남겨서 playStart 에서 체크한다
             DB::table("members")
                 ->where("ids", "=", $memberIds)
-                ->where("name", "=", $memberName)
                 ->update([
                     "try_login_at" => DB::raw("NOW()"),
                     "updated_at" => DB::raw("NOW()"),
@@ -249,7 +244,7 @@ class PlayController extends Controller
             DB::commit();
 
             Log::info(
-                "[playLogin][Ok] id: {$selectData->id}, name: {$memberName}"
+                "[playLogin][Ok] id: {$selectData->id}, name: {$selectData->name}"
             );
         } catch (Exception $e) {
             DB::rollback();
