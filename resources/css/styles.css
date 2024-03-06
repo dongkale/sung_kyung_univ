@@ -92,3 +92,39 @@ tr.tr-hover-class:hover {
     text-align: right;
     padding-left: 10px;
 }
+
+/* Style buttons */
+.btn-download {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+/* Darker background on mouse-over */
+.btn-download:hover {
+    background-color: #0a58ca;
+    color: white;
+    border-color: #0a53be;
+}
+
+.nav-menu-hover:hover {
+    background: lightgrey !important;
+    /* background-color: #007bff;
+    a {
+        color: white;
+    } */
+}
+
+.nav-menu-hover > a {
+    text-decoration: none;
+}
+
+.nav-menu-hover.active {
+    background-color: #007bff !important;
+    a {
+        color: white !important;
+    }
+}

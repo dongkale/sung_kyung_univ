@@ -65,7 +65,9 @@
             </div>            
             <div class="card-body">                
                 <div class="text-right float-right mb-2">                     
-                </div>
+                    {{-- <button type="button" class="btn btn-primary">Download<i class="bi bi-download"></i></button> --}}
+                    <button class="btn-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"><i class="fa fa-download"></i> Download</button>
+                </div>                
                 <table class="table table-borderd table-striped tableHeaderFixed">
                     <thead>
                         <tr align="center">                            
@@ -121,6 +123,10 @@
     </div>
 </div>
 
+<form id="memberListWithStatExportForm" method="POST" action="/api/memberListWithStatExport">
+    @csrf
+</form>
+
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script type="text/javascript" src="{{mix('/js/util.js')}}"></script>
@@ -128,7 +134,7 @@
 <script>
 
 $(document).ready( function() {    
-    viewMemberList();
+    viewMemberListWithStat();
 
     chartPlayCountByMember();  
     
@@ -148,10 +154,10 @@ function reformatBirthDate(input) {
     return year + '-' + day + '-' + month;
 }
 
-function viewMemberList() {   
+function viewMemberListWithStat() {   
     callAPI({
         method: 'GET',
-        url: '/api/memberList'
+        url: '/api/memberListWithStat'
     }).then(function (response) {        
         var html = '';            
 
@@ -185,6 +191,10 @@ function viewMemberList() {
     })
 }
 
+function clickMemberListWithStatToExportProc() {
+    $("#memberListWithStatExportForm").submit();
+}
+
 function chartPlayCountByMember() {
     callAPI({
         method: 'GET',
@@ -198,7 +208,7 @@ function chartPlayCountByMember() {
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
             for (let item of result_data.play_count) {  
-                console.log(item);
+                // console.log(item);
 
                 datas.push(item.count);
                 categorys.push(`${item.name}(${item.ids})`);
@@ -290,7 +300,7 @@ function chartPlayGroundCount() {
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
             for (let item of result_data.ground_count) {  
-                console.log(item);
+                // console.log(item);
 
                 datas.push(item.count);
                 categorys.push(`${item.ground}`);
@@ -365,7 +375,7 @@ function chartMemberAgeCount() {
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
             for (let item of result_data.member_age_count) {  
-                console.log(item);
+                // console.log(item);
 
                 datas.push(item.count);
                 categorys.push(`${item.age}세`);
@@ -525,14 +535,20 @@ function drawNormalDonut(draw_id, datas, categories) {
         dataLabels: {
             enabled: true,
             formatter(val, opts) {
-                const name = opts.w.globals.labels[opts.seriesIndex]
-                return [name, val.toFixed(1) + '%']
+                const name = opts.w.globals.labels[opts.seriesIndex];
+                const data = opts.w.globals.series[opts.seriesIndex];
+
+                // console.log(data);
+                viewData = `${name}(${data})`;
+
+                // return [name, data, val.toFixed(1) + '%']
+                return [viewData, val.toFixed(1) + '%']
             }
         }, 
         chart: {            
             type: 'donut',
             width: '100%',
-            height: '200px',
+            height: '230px',
             toolbar: {
                 show: true
             }

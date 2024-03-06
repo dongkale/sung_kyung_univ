@@ -23,6 +23,10 @@ Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
 
 Route::middleware(["logger"])->group(function () {
     Route::get("/memberList", [MemberController::class, "memberList"]);
+    Route::get("/memberListWithStat", [
+        MemberController::class,
+        "memberListWithStat",
+    ]);
 
     Route::post("/addMember", [MemberController::class, "addMember"]);
     Route::post("/editMember", [MemberController::class, "editMember"]);
@@ -69,5 +73,10 @@ Route::middleware(["logger"])->group(function () {
     Route::get("/selectGrounSuccessFalseCount", [
         PlayController::class,
         "selectGrounSuccessFalseCount",
+    ]);
+
+    Route::post("/memberListWithStatExport", [
+        MemberController::class,
+        "memberListWithStatExcelForListExport",
     ]);
 });

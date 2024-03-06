@@ -55,3 +55,9 @@ sudo chown -R www-data:www-data *
 sudo php artisan l5-swagger:generate
 sudo chown -R www-data:www-data *
 ```
+
+## Excel Download 
+
+```sh
+composer require maatwebsite/excel --ignore-platform-reqs
+```

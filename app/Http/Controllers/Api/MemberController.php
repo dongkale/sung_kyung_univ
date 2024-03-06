@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
+use Maatwebsite\Excel\Facades\Excel;
+
+use App\Models\MembersExcelForList;
+use App\Models\Member;
+
 use App\Utils\CommonUtils;
 
 use stdClass;
@@ -32,34 +37,18 @@ class MemberController extends Controller
 
     public function memberList(Request $request)
     {
-        $dbEncKey = env("DB_ENCRYPT_KEY");
+        $selectData = Member::getList();
 
-        $selectData = DB::table("members as m")
-            ->select(
-                "m.id",
-                "m.ids",
-                DB::raw("AES_DECRYPT(UNHEX(m.email), '{$dbEncKey}') as email"),
-                "m.name",
-                "m.sex",
-                "m.birth_date",
-                DB::raw(
-                    "ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365) as age"
-                ),
-                DB::raw(
-                    "AES_DECRYPT(UNHEX(m.mobile_phone), '{$dbEncKey}') as mobile_phone"
-                ),
-                "m.login_flag",
-                "m.last_login_at",
-                DB::raw(
-                    "(SELECT COUNT(*) FROM plays WHERE member_id = m.id) as play_count"
-                ),
-                DB::raw(
-                    "(SELECT SUM(total_time) FROM plays WHERE member_id = m.id) as play_total_time"
-                ),
-                "m.created_at"
-            )
-            ->get()
-            ->toArray();
+        return response()->json([
+            "result_code" => 0,
+            "result_message" => "Success",
+            "result_data" => $selectData,
+        ]);
+    }
+
+    public function memberListWithStat(Request $request)
+    {
+        $selectData = Member::getListWithStat();
 
         return response()->json([
             "result_code" => 0,
@@ -313,5 +302,27 @@ class MemberController extends Controller
                 "id_list" => $memberIdListStr,
             ],
         ]);
+    }
+
+    public function memberListWithStatExcelForListExport(Request $request)
+    {
+        $created_at = date("Ymdhis");
+
+        $headings = [
+            "Id",
+            "이름",
+            "성별",
+            "생년월일",
+            "나이",
+            "휴대폰번호",
+            "사용 횟수",
+            "사용 시간(분)",
+            "생성일",
+        ];
+
+        return Excel::download(
+            new MembersExcelForList($headings),
+            "members_" . $created_at . ".xlsx"
+        );
     }
 }

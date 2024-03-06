@@ -999,14 +999,13 @@ class PlayController extends Controller
     {
         $memberAgeCount = DB::table("members as m")
             ->select(
-                DB::raw(
-                    "(ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365)) as age"
-                ),
+                DB::raw("(YEAR(CURDATE()) - YEAR(m.birth_date)) as age"),
                 DB::raw("COUNT(m.id) as count")
             )
-            ->groupByRaw(
-                "(ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365))"
-            )
+            // ->groupByRaw(
+            //     "(ROUND((TO_DAYS(NOW()) - (TO_DAYS(m.birth_date))) / 365))"
+            // )
+            ->groupByRaw("(YEAR(CURDATE()) - YEAR(m.birth_date))")
             ->get()
             ->toArray();
         if (empty($memberAgeCount)) {
