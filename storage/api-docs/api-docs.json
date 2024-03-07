@@ -192,7 +192,7 @@
                                     "ids": {
                                         "description": "유저 ids(001, 002)",
                                         "type": "string",
-                                        "example": "1"
+                                        "example": "001"
                                     }
                                 },
                                 "type": "object"

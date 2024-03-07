@@ -45,16 +45,16 @@ $mainMenu = isset($mainMenuCode) ? $mainMenuCode : "";
 $subMenu = isset($subMenuCode) ? $subMenuCode : "";
 @endphp
 
-    <div class="container-fluid">
-        <div class="row">
-            @include('partials.sidebar')
-            {{-- <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4"> --}}
-            <main role="main" class="col-md-8 px-md-4">
-                @include('partials.main_top')
-                @yield('content')
-            </main>
-        </div>
+<div class="container-fluid">
+    <div class="row">
+        @include('partials.sidebar')
+        {{-- <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4"> --}}
+        <main role="main" class="col-md-9 px-md-4">
+            @include('partials.main_top')
+            @yield('content')
+        </main>
     </div>
+</div>
 
 </body>
 </html>

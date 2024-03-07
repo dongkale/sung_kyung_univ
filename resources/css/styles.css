@@ -71,10 +71,36 @@ tr.tr-hover-class:hover {
     margin-left: 15px;
 }
 
+/* 메뉴 선택 시 색상 변경 */
+/* .nav-link.active {
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    border-radius: 0.25rem;
+} */
+
+.nav-item div.active {
+    background-color: #007bff;
+    color: white;
+    border-radius: 0.25rem;
+    a {
+        color: white;
+    }
+}
+
+/* .nav-item div:hover {
+    z-index: 2;
+
+    background-color: lightgrey !important;
+    color: white;
+    border-radius: 0.25rem;
+} */
+
 /* .nav-item ul li a:hover {
     border-right: solid 3px #0056b3;
 } */
 
+/* 2단계 메뉴의 메인 메뉴 선택 시 아이콘 변경 */
 .nav-item .nav-link[aria-expanded="false"] .submenu-icon::after {
     content: "\f0d7";
     font-family: "Font Awesome\ 5 Free";
@@ -84,6 +110,7 @@ tr.tr-hover-class:hover {
     padding-left: 10px;
 }
 
+/* 2단계 메뉴의 메인 메뉴 선택 시 아이콘 변경 */
 .nav-item .nav-link[aria-expanded="true"] .submenu-icon::after {
     content: "\f0da";
     font-family: "Font Awesome\ 5 Free";
@@ -103,6 +130,25 @@ tr.tr-hover-class:hover {
     font-size: 15px;
 }
 
+.btn-excel-download {
+    background-color: #007bff;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    width: 90px;
+    height: 40px;
+    background: url("/images/icons8-ms-excel-2-32.png") #007bff;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.btn-excel-download:hover {
+    background-color: #0a58ca;
+    color: white;
+    border-color: #0a53be;
+}
+
 /* Darker background on mouse-over */
 .btn-download:hover {
     background-color: #0a58ca;
@@ -116,15 +162,19 @@ tr.tr-hover-class:hover {
     a {
         color: white;
     } */
+
+    /* z-index: 2;
+    border-color: #007bff; */
 }
 
 .nav-menu-hover > a {
     text-decoration: none;
 }
 
-.nav-menu-hover.active {
-    background-color: #007bff !important;
+li.nav-menu-hover.active {
+    background: lightgrey !important;
+    /* background-color: #007bff !important;
     a {
-        color: white !important;
-    }
+        color: white;
+    } */
 }

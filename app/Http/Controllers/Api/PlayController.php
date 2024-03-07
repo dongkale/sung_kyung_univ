@@ -36,7 +36,7 @@ use Exception;
  */
 class PlayController extends Controller
 {
-    const LOGIN_PLAY_START_GAP_TIME = 60000;
+    const LOGIN_PLAY_START_GAP_TIME = 60;
 
     // tags : 메인 타이틀
     // description: API 설명

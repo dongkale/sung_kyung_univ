@@ -60,17 +60,21 @@
 <div class="row" id="member-list">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header" style="font-size:14px">                
+            <div class="card-header" style="font-size:14px">
                 <div style="font-size:20px">사용자</div>
             </div>            
             <div class="card-body">                
-                <div class="text-right float-right mb-2">                     
+                <div class="text-right float-right mb-2">
                     {{-- <button type="button" class="btn btn-primary">Download<i class="bi bi-download"></i></button> --}}
-                    <button class="btn-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"><i class="fa fa-download"></i> Download</button>
-                </div>                
+                    {{-- <button class="btn-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"><i class="fa fa-download"></i> Download</button> --}}
+                    {{-- <button class="btn-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"><img src="/images/icons8-ms-엑셀-32.png" style="width: 100%;height: 100%;overflow: hidden;"></button> --}}
+                    {{-- <button class="btn-excel-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"><img src="/images/icons8-ms-엑셀-48.png" style="width: 80%;height: 80%;overflow: hidden;"></button> --}}
+                    <button class="btn-excel-download rounded-sm" onClick="clickMemberListWithStatToExportProc()"></button>
+                </div>
+
                 <table class="table table-borderd table-striped tableHeaderFixed">
                     <thead>
-                        <tr align="center">                            
+                        <tr align="center">    
                             <th width="8%">ID</th>
                             <th>이름</th>
                             <th width="8%">성별</th> 
@@ -79,7 +83,8 @@
                             <th>휴대폰번호</th>
                             <th>사용 횟수</th>
                             <th>사용 시간</th>
-                            <th>생성일</th>                            
+                            <th>생성일</th>
+                            <th>*</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -143,6 +148,7 @@ function viewMemberListWithStat() {
                 html += `   <td>${item.play_count}</td>`;
                 html += `   <td>${item.play_total_time/60} 분</td>`;
                 html += `   <td>${item.created_at}</td>`;
+                html += `   <td><button type="button" class="btn btn-primary" onclick="clickMemberStatDetail('${item.id}', '${item.m_ids}', '${item.m_name}')">통계</button></td>;`
                 html += `</tr>`;
             };
 
@@ -162,15 +168,14 @@ function clickMemberListWithStatToExportProc() {
     $("#memberListWithStatExportForm").submit();
 }
 
+// 사용자 별 사용 횟수(모든 유저)
 function chartPlayCountByMember() {
     callAPI({
         method: 'GET',
         url: '/api/selectPlayCountByMember'
     }).then(function (response) {        
-        var html = '';         
-        
         var datas = [];
-        var categorys = [];
+        var categories = [];
 
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
@@ -178,12 +183,13 @@ function chartPlayCountByMember() {
                 // console.log(item);
 
                 datas.push(item.count);
-                categorys.push(`${item.name}(${item.ids})`);
+                categories.push(`${item.name}(${item.ids})`);
             }
             
-            drawPlayCountByMember(document.querySelector('#play-count-by-member'), datas, categorys);
+            // drawPlayCountByMember(document.querySelector('#play-count-by-member'), datas, categories);
+            drawNormalBar(document.querySelector('#play-count-by-member'), "", "230px", [{name:'Play', data: datas}], categories);
         } else {
-            console.log("처리 중 문제가 발생하였습니다");
+            console.log(`처리 중 문제가 발생하였습니다.(${response.result_code}, ${response.result_message})`);
         }
     }).catch(function (error) {
         alert("처리 중 문제가 발생하였습니다");
@@ -193,6 +199,103 @@ function chartPlayCountByMember() {
     })
 }
 
+// 장소별 분포
+function chartPlayGroundCount(memberId) {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectPlayGroundCount',
+        data : {
+            member_id: memberId
+        }
+    }).then(function (response) {        
+        var datas = [];
+        var categories = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.ground_count) {  
+                // console.log(item);
+
+                datas.push(item.count);
+                categories.push(`${item.ground}`);
+            }
+            
+            // drawPlayGroundCount(document.querySelector('#play-ground-count'), datas, categories);            
+            drawNormalDonut(document.querySelector('#play-ground-count'), "", "230px", datas, categories);
+        } else {
+            console.log(`처리 중 문제가 발생하였습니다.(${response.result_code}, ${response.result_message})`);
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })    
+}
+
+// 나이별 분포
+function chartMemberAgeCount() {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectMemberAgeCount'
+    }).then(function (response) {        
+        var datas = [];
+        var categories = [];
+
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.member_age_count) {                  
+                datas.push(item.count);
+                categories.push(`${item.age}세`);
+            }
+            
+            // drawMemberAgeCount(document.querySelector('#member-age-count'), datas, categories);
+            drawNormalDonut(document.querySelector('#member-age-count'), "", "230px", datas, categories);
+        } else {
+            console.log(`처리 중 문제가 발생하였습니다.(${response.result_code}, ${response.result_message})`);
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })    
+}
+
+// 장소별 성공/실패 횟수
+function chartGroundSuccessFalseCount(memberId) {
+    callAPI({
+        method: 'GET',
+        url: '/api/selectGrounSuccessFalseCount',
+        data : {
+            member_id: memberId
+        }
+    }).then(function (response) {        
+        var successDatas = [];
+        var falseDatas = [];
+        var categories = [];
+        
+        if (response.result_code == 0) {            
+            var result_data = response.result_data; 
+            for (let item of result_data.stat) {                  
+                successDatas.push(item.success_count);
+                falseDatas.push(item.false_count);
+                categories.push(item.ground);
+            }
+
+            drawNormalBar(document.querySelector('#ground-success-false-count'), "", "220px", [{name:'성공', data: successDatas}, {name:'실패', data: falseDatas}], categories);            
+        } else {                        
+            console.log(`처리 중 문제가 발생하였습니다.(${response.result_code}, ${response.result_message})`);
+        }
+    }).catch(function (error) {
+        alert("처리 중 문제가 발생하였습니다");
+        console.log(error);
+    }).finally(function () {
+        ;
+    })
+}
+
+/*
 function drawPlayCountByMember(draw_id, datas, categories) {
     // var options = {
     //     series: [{
@@ -250,41 +353,9 @@ function drawPlayCountByMember(draw_id, datas, categories) {
 
     drawNormalBar(draw_id, "", 230, [{name:'Play', data: datas}], categories);
 }
+*/
 
-function chartPlayGroundCount() {
-    callAPI({
-        method: 'GET',
-        url: '/api/selectPlayGroundCount',
-        // data : {
-        //     member_id: 15
-        // }
-    }).then(function (response) {        
-        var html = '';         
-        
-        var datas = [];
-        var categorys = [];
-
-        if (response.result_code == 0) {            
-            var result_data = response.result_data; 
-            for (let item of result_data.ground_count) {  
-                // console.log(item);
-
-                datas.push(item.count);
-                categorys.push(`${item.ground}`);
-            }
-            
-            drawPlayGroundCount(document.querySelector('#play-ground-count'), datas, categorys);
-        } else {
-            console.log("처리 중 문제가 발생하였습니다");
-        }
-    }).catch(function (error) {
-        alert("처리 중 문제가 발생하였습니다");
-        console.log(error);
-    }).finally(function () {
-        ;
-    })    
-}
-
+/*
 function drawPlayGroundCount(draw_id, datas, categories) {
     // var options = {
     //     series: datas,
@@ -326,103 +397,11 @@ function drawPlayGroundCount(draw_id, datas, categories) {
     // var chart = new ApexCharts(draw_id, options);
     // chart.render();
 
-    drawNormalDonut(draw_id, datas, categories);
+    drawNormalDonut(draw_id, "", "230px", datas, categories);
 }
+*/
 
-function chartMemberAgeCount() {
-    callAPI({
-        method: 'GET',
-        url: '/api/selectMemberAgeCount'
-    }).then(function (response) {        
-        var html = '';         
-        
-        var datas = [];
-        var categorys = [];
-
-        if (response.result_code == 0) {            
-            var result_data = response.result_data; 
-            for (let item of result_data.member_age_count) {  
-                // console.log(item);
-
-                datas.push(item.count);
-                categorys.push(`${item.age}세`);
-            }
-            
-            drawMemberAgeCount(document.querySelector('#member-age-count'), datas, categorys);
-        } else {
-            console.log("처리 중 문제가 발생하였습니다");
-        }
-    }).catch(function (error) {
-        alert("처리 중 문제가 발생하였습니다");
-        console.log(error);
-    }).finally(function () {
-        ;
-    })    
-}
-
-// function chartGroundFalseCount() {
-//     callAPI({
-//         method: 'GET',
-//         url: '/api/selectGrounFalseCount'
-//     }).then(function (response) {        
-//         var html = '';         
-        
-//         var datas = [];
-//         var categorys = [];
-
-//         if (response.result_code == 0) {            
-//             var result_data = response.result_data; 
-//             for (let item of result_data.ground_count) {                  
-//                 datas.push(item.false_count);
-//                 categorys.push(item.ground);
-//             }
-            
-//             drawNormalBar(document.querySelector('#ground-false-count'), [{name:'Play', data: datas}], categorys);
-//         } else {            
-//             console.log("처리 중 문제가 발생하였습니다");
-//         }
-//     }).catch(function (error) {
-//         alert("처리 중 문제가 발생하였습니다");
-//         console.log(error);
-//     }).finally(function () {
-//         ;
-//     })
-// }
-
-function chartGroundSuccessFalseCount() {
-    callAPI({
-        method: 'GET',
-        url: '/api/selectGrounSuccessFalseCount',
-        // data : {
-        //     member_id: 99
-        // }
-    }).then(function (response) {        
-        var html = '';         
-        
-        var successDatas = [];
-        var falseDatas = [];
-        var categorys = [];
-        
-        if (response.result_code == 0) {            
-            var result_data = response.result_data; 
-            for (let item of result_data.stat) {                  
-                successDatas.push(item.success_count);
-                falseDatas.push(item.false_count);
-                categorys.push(item.ground);
-            }
-
-            drawNormalBar(document.querySelector('#ground-success-false-count'), "", 210, [{name:'성공', data: successDatas}, {name:'실패', data: falseDatas}], categorys);            
-        } else {                        
-            console.log("처리 중 문제가 발생하였습니다");
-        }
-    }).catch(function (error) {
-        alert("처리 중 문제가 발생하였습니다");
-        console.log(error);
-    }).finally(function () {
-        ;
-    })
-}
-
+/*
 function drawMemberAgeCount(draw_id, datas, categories) {
     // var options = {
     //     series: datas,
@@ -492,10 +471,11 @@ function drawMemberAgeCount(draw_id, datas, categories) {
     // var chart = new ApexCharts(draw_id, options);
     // chart.render();
 
-    drawNormalDonut(draw_id, datas, categories);
+    drawNormalDonut(draw_id, "", "230px", datas, categories);
 }
+*/
 
-function drawNormalDonut(draw_id, datas, categories) {
+function drawNormalDonut(draw_id, title, height, datas, categories) {
     var options = {
         series: datas,
         labels: categories,
@@ -511,11 +491,15 @@ function drawNormalDonut(draw_id, datas, categories) {
                 // return [name, data, val.toFixed(1) + '%']
                 return [viewData, val.toFixed(1) + '%']
             }
+        },
+        title: {
+            text: title,
+            align: 'left'
         }, 
         chart: {            
             type: 'donut',
             width: '100%',
-            height: '230px',
+            height: height, // '230px',
             toolbar: {
                 show: true
             }
@@ -589,6 +573,36 @@ function drawNormalBar(draw_id, title, height, datas, categories) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// function chartGroundFalseCount() {
+//     callAPI({
+//         method: 'GET',
+//         url: '/api/selectGrounFalseCount'
+//     }).then(function (response) {        
+//         var html = '';         
+        
+//         var datas = [];
+//         var categorys = [];
+
+//         if (response.result_code == 0) {            
+//             var result_data = response.result_data; 
+//             for (let item of result_data.ground_count) {                  
+//                 datas.push(item.false_count);
+//                 categorys.push(item.ground);
+//             }
+            
+//             drawNormalBar(document.querySelector('#ground-false-count'), [{name:'Play', data: datas}], categorys);
+//         } else {            
+//             console.log("처리 중 문제가 발생하였습니다");
+//         }
+//     }).catch(function (error) {
+//         alert("처리 중 문제가 발생하였습니다");
+//         console.log(error);
+//     }).finally(function () {
+//         ;
+//     })
+// }
+
 
 function playCountChart(draw_id) {
     var options = {

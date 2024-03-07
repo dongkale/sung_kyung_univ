@@ -71,8 +71,15 @@ class LoggerMiddleware
         // a unique message to log, I prefer to save the path of request for easy debug
         $message = str_replace("/", "_", trim($request->getPathInfo(), "/"));
 
+        // request()->setTrustedProxies(
+        //     ["REMOTE_ADDR"],
+        //     Request::HEADER_X_FORWARDED_TRAEFIK
+        // );
+        $ip = request()->getClientIp();
+        $ipStr = "[IP: {$ip}] ";
+
         // log the gathered information
-        Log::info($message, $data);
+        Log::info($ipStr . $message, $data);
 
         // return the response
         return $response;
