@@ -974,7 +974,7 @@ class PlayController extends Controller
             ->toArray();
         if (empty($groundCount)) {
             return response()->json([
-                "result_code" => 0,
+                "result_code" => -1,
                 "result_message" => "Not Found",
             ]);
         }
