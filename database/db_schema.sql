@@ -15,6 +15,7 @@ CREATE TABLE `members` (
     `last_login_at` datetime DEFAULT NULL COMMENT '마지막 로그인 날짜',
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` timestamp NULL DEFAULT NULL,
+    
     PRIMARY KEY (`id`),    
     INDEX `IX_members_ids`(`ids`) USING BTREE,
     INDEX `IX_members_name`(`name`) USING BTREE,
@@ -75,11 +76,11 @@ CREATE TABLE `play_logs` (
     `member_id` bigint unsigned NOT NULL COMMENT 'members 테이블 id',
     `seq_no` bigint unsigned NOT NULL COMMENT 'members seq_id',
 
-    `stat_data` JSON
+    `stat_data` JSON COMMENT '통계 데이터(JSON)',
     
     `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     
     PRIMARY KEY (`id`),    
-    INDEX `IX_play_details_member_id`(`member_id`) USING BTREE,
-    INDEX `IX_play_details_seq_no`(`seq_no`) USING BTREE
+    INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
+    INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

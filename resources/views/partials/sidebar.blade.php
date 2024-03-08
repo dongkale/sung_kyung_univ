@@ -1,6 +1,5 @@
-<nav class="col-md-2 d-none d-md-block bg-light sidebar d-none py-4 sticky-top"> 
+<nav class="col-md-2 d-none d-sm-block bg-light sidebar py-4 sticky-top"> 
     <div class="sidebar-sticky list-group ">
-    {{-- <div class="col-sm-2 sidenav d-none d-sm-block sidebar py-4"> --}}
         <h2><a href="{{ url('/dashboard') }}" style="text-decoration: none">BIBLE UNIVERSITY</a></h2>
         <ul class="nav flex-column nav-stacked list-group mt-3">            
             <li class="nav-item">

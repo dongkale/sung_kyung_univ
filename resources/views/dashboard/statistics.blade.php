@@ -25,7 +25,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
                 <div style="font-size:20px;">장소별 분포</div>
@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
                 <div style="font-size:20px;">나이별 분포</div>
@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card">   
             <div class="card-header" style="font-size:14px">                
                 <div style="font-size:20px">장소별 성공/실패 횟수</div>
@@ -114,7 +114,7 @@
                             <th width="10%">나이</th>
                             <th>휴대폰번호</th>
                             <th>사용 횟수</th>
-                            <th>사용 시간</th>
+                            <th>사용 시간(분)</th>
                             <th>생성일</th>
                             <th>*</th>
                         </tr>
@@ -207,7 +207,7 @@ function clickMemberListWithStatToExportProc() {
 async function chartPlayCountByMember() {
     var chart = null;
 
-    callAPI({
+    await callAPI({
         method: 'GET',
         url: '/api/selectPlayCountByMember'
     }).then(function (response) {        
@@ -216,9 +216,7 @@ async function chartPlayCountByMember() {
 
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
-            for (let item of result_data.play_count) {  
-                // console.log(item);
-
+            for (let item of result_data.play_count) {                
                 datas.push(item.count);
                 categories.push(`${item.name}(${item.ids})`);
             }
@@ -254,9 +252,7 @@ async function chartPlayGroundCount(drawId, memberId) {
 
         if (response.result_code == 0) {
             var result_data = response.result_data; 
-            for (let item of result_data.ground_count) {  
-                // console.log(item);
-
+            for (let item of result_data.ground_count) {                  
                 datas.push(item.count);
                 categories.push(`${item.ground}`);
             }
@@ -280,7 +276,7 @@ async function chartPlayGroundCount(drawId, memberId) {
 async function chartMemberAgeCount(drawId) {
     var chart = null;
 
-    callAPI({
+    await callAPI({
         method: 'GET',
         url: '/api/selectMemberAgeCount'
     }).then(function (response) {        
@@ -346,8 +342,7 @@ async function chartGroundSuccessFalseCount(drawId, memberId) {
     return chart;
 }
 
-async function clickMemberStatDetail(memberId, memberIds, memberName) {
-    
+async function clickMemberStatDetail(memberId, memberIds, memberName) {    
     if (g_chartPlayGroundCount) {
         g_chartPlayGroundCount.destroy();
     }
@@ -361,6 +356,107 @@ async function clickMemberStatDetail(memberId, memberIds, memberName) {
     }
 
     g_chartGroundSuccessFalseCount = await chartGroundSuccessFalseCount(document.querySelector('#member-ground-success-false-count'), memberId);
+}
+
+function drawNormalDonut(draw_id, title, height, datas, categories) {
+    var options = {
+        series: datas,
+        labels: categories,
+        dataLabels: {
+            enabled: true,
+            formatter(val, opts) {
+                const name = opts.w.globals.labels[opts.seriesIndex];
+                const data = opts.w.globals.series[opts.seriesIndex];
+
+                // console.log(data);
+                viewData = `${name}(${data})`;
+
+                // return [name, data, val.toFixed(1) + '%']
+                return [viewData, val.toFixed(1) + '%']
+            }
+        },
+        title: {
+            text: title,
+            align: 'left'
+        }, 
+        chart: {            
+            type: 'donut',
+            width: '100%',
+            height: height, // '230px',
+            toolbar: {
+                show: true
+            }
+        },     
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 400
+                },
+                legend: {
+                    show: true,
+                    position: 'bottom'
+                }
+            }
+        }],        
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+
+    return chart;
+}
+
+function drawNormalBar(draw_id, title, height, datas, categories) {
+    var options = {
+        series: datas,        
+        chart: {
+            type: 'bar',
+            height: height
+        },
+        title: {
+            text: title,
+            align: 'left'
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        xaxis: {                        
+            categories: categories
+        },
+        yaxis: {
+            title: {
+                text: '횟수'
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " 회"
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(draw_id, options);
+    chart.render();
+
+    return chart;
 }
 
 /*
@@ -542,107 +638,6 @@ function drawMemberAgeCount(draw_id, datas, categories) {
     drawNormalDonut(draw_id, "", "230px", datas, categories);
 }
 */
-
-function drawNormalDonut(draw_id, title, height, datas, categories) {
-    var options = {
-        series: datas,
-        labels: categories,
-        dataLabels: {
-            enabled: true,
-            formatter(val, opts) {
-                const name = opts.w.globals.labels[opts.seriesIndex];
-                const data = opts.w.globals.series[opts.seriesIndex];
-
-                // console.log(data);
-                viewData = `${name}(${data})`;
-
-                // return [name, data, val.toFixed(1) + '%']
-                return [viewData, val.toFixed(1) + '%']
-            }
-        },
-        title: {
-            text: title,
-            align: 'left'
-        }, 
-        chart: {            
-            type: 'donut',
-            width: '100%',
-            height: height, // '230px',
-            toolbar: {
-                show: true
-            }
-        },     
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 400
-                },
-                legend: {
-                    show: true,
-                    position: 'bottom'
-                }
-            }
-        }],        
-    };
-
-    var chart = new ApexCharts(draw_id, options);
-    chart.render();
-
-    return chart;
-}
-
-function drawNormalBar(draw_id, title, height, datas, categories) {
-    var options = {
-        series: datas,        
-        chart: {
-            type: 'bar',
-            height: height
-        },
-        title: {
-            text: title,
-            align: 'left'
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                endingShape: 'rounded'
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-        },
-        xaxis: {                        
-            categories: categories
-        },
-        yaxis: {
-            title: {
-                text: '횟수'
-            }
-        },
-        fill: {
-            opacity: 1
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return val + " 회"
-                }
-            }
-        }
-    };
-
-    var chart = new ApexCharts(draw_id, options);
-    chart.render();
-
-    return chart;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 

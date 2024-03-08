@@ -606,10 +606,6 @@ class PlayController extends Controller
             ]);
         }
 
-        // Log::info(
-        //     "[PlayEnd][Check] id: {$memberId}, play_seq_no: {$playSeqNo}"
-        // );
-
         DB::beginTransaction();
         try {
             $dbPlay->update([
