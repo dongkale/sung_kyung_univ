@@ -404,8 +404,6 @@ class PlayController extends Controller
      *                      @OA\Property(property="step", type="int", description="순서(1,2,3)", example="1"),
      *                      @OA\Property(property="actual_play_time", type="int", description="소요시간", example="120"),
      *                      @OA\Property(property="false_count", type="int", description="실패 횟수", example="1"),
-     *                      @OA\Property(property="start_date", type="datetime", description="시작 시간", example="2024-02-22 11:10:11"),
-     *                      @OA\Property(property="end_date", type="datetime", description="종료 시간", example="2024-02-22 11:20:59"),
      *                 ),
      *             )
      *         )
@@ -490,8 +488,12 @@ class PlayController extends Controller
                 ->delete();
 
             foreach ($playStats as $item) {
+                // Log::info(
+                //     "[playStat][Stat] New List: play_id: {$play->id}, ground: {$item->ground}, step:{$item->step}, actual_play_time: {$item->actual_play_time}, false_count: {$item->false_count}, start_date: {$item->start_date}, end_date: {$item->end_date}"
+                // );
+
                 Log::info(
-                    "[playStat][Stat] New List: play_id: {$play->id}, ground: {$item->ground}, step:{$item->step}, actual_play_time: {$item->actual_play_time}, false_count: {$item->false_count}, start_date: {$item->start_date}, end_date: {$item->end_date}"
+                    "[playStat][Stat] New List: play_id: {$play->id}, ground: {$item->ground}, step:{$item->step}, actual_play_time: {$item->actual_play_time}, false_count: {$item->false_count}"
                 );
 
                 DB::table("play_details")->insertGetId([
@@ -500,8 +502,12 @@ class PlayController extends Controller
                     "step" => $item->step,
                     "actual_play_time" => $item->actual_play_time,
                     "false_count" => $item->false_count,
-                    "start_date" => $item->start_date,
-                    "end_date" => $item->end_date,
+                    "start_date" => empty($item->start_date)
+                        ? null
+                        : $item->start_date,
+                    "end_date" => empty($item->end_date)
+                        ? null
+                        : $item->end_date,
                     "updated_at" => DB::raw("NOW()"),
                 ]);
             }
@@ -800,9 +806,10 @@ class PlayController extends Controller
             "id" => "required",
             "ground" => "required",
             "step" => "required",
-            "start_date" => "required",
-            "end_date" => "required",
+            // "start_date" => "required",
+            // "end_date" => "required",
             "false_count" => "required",
+            "actual_play_time" => "required",
         ]);
 
         if ($validator->fails()) {

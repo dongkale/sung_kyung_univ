@@ -60,9 +60,9 @@
                             <th>사용 번호</th>
                             <th>장소</th>
                             <th>순서</th>
-                            <th>사용 시간(분)</th> 
-                            <th>시작 시간</th>
-                            <th>종료 시간</th>
+                            <th>사용 시간(초)</th> 
+                            {{-- <th>시작 시간</th>
+                            <th>종료 시간</th> --}}
                             <th>실패 횟수</th>
                             <th>*</th>                            
                         </tr>
@@ -100,7 +100,8 @@
                 <label> 순서 </label>
                 <input type="number" id="play-detail-step" class="form-control" value="" min="1" max="100"/>
             </div>
-            <div class="form-group">
+
+            <div class="form-group" style="display: none">
                 <label> 시작 시간 </label>
                 <input type="datetime-local"
                        id="play-detail-start-date"
@@ -108,7 +109,7 @@
                        value=""
                        onChange="onChangeStartDate(this)"/>
             </div>           
-            <div class="form-group">
+            <div class="form-group" style="display: none">
                 <label> 종료 시간 </label>
                 <input type="datetime-local"
                        id="play-detail-end-date"
@@ -116,6 +117,12 @@
                        value=""
                        onChange="onChangeEndDate(this)"/>
             </div>
+
+            <div class="form-group">
+                <label> 사용 시간(초) </label>                
+                <input type="number" id="play-detail-actual-time" class="form-control" value="" min="1" max="10000"/>
+            </div>
+            
             <div class="form-group">
                 <label> 실패 횟수 </label>                
                 <input type="number" id="play-detail-false-count" class="form-control" value="" min="1" max="100"/>
@@ -188,35 +195,35 @@ function viewPlayDetail(playId, memberIds, memberName, playSeqNo) {
         data: {
             "play_id": playId
         }
-    }).then(function (response) {        
-        var html = '';            
+    }).then(function (response) {
+        var html = '';
 
         if (response.result_code == 0) {
             $("#play-detail").find("tbody").children().remove();
 
             var result_data = response.result_data; 
-            for (let item of result_data) {          
-                html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;                
+            for (let item of result_data) {
+                html += `<tr align="center" style="vertical-align: middle;" class="tr-hover-class">`;
                 html += `   <td width="7%">${memberIds}</td>`;
                 html += `   <td>${memberName}</td>`;
                 html += `   <td>${playSeqNo}</td>`;
                 html += `   <td>${item.ground}</td>`;
                 html += `   <td>${item.step}</td>`;
-                html += `   <td>${Math.floor(item.actual_play_time/ 60)} 분</td>`;
-                html += `   <td>${item.start_date ? item.start_date : '-'}</td>`;
-                html += `   <td>${item.end_date ? item.end_date : '-'}</td>`;
+                html += `   <td>${item.actual_play_time} 초</td>`;
+                // html += `   <td>${item.start_date ? item.start_date : '-'}</td>`;
+                // html += `   <td>${item.end_date ? item.end_date : '-'}</td>`;
                 html += `   <td>${item.false_count}</td>`; 
-                html += `   <td class="d-flex">`;            
+                html += `   <td class="d-flex">`;
                 html += `       <button type="button"`; 
                 html += `               class="btn btn-success"`;
                 html += `               data-toggle="modal"`;
                 html += `               data-target="#editPlayDetailModal"`; 
-                html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.false_count}')">수정</button>`;
+                html += `               onClick="clickEditPlayDetail('${playId}', '${memberIds}', '${memberName}', '${playSeqNo}', '${item.id}', '${item.ground}', '${item.step}', '${item.start_date}', '${item.end_date}', '${item.actual_play_time}', '${item.false_count}')">수정</button>`;
                 html += `       <button type="button"`; 
                 html += `               class="btn btn-danger ml-2"`;            
                 html += `               onClick="clickDeletelayDetail('${item.id}', '${playId}', '${memberIds}', '${memberName}', '${playSeqNo}')">삭제</button>`            
                 html += `   </td>;`;
-                html += `</tr>`;                
+                html += `</tr>`;
             };
 
             $("#play-detail").find("tbody").append(html);
@@ -238,7 +245,7 @@ function clickPlayDetail(playId, memberIds, memberName, playSeqNo) {
     viewPlayDetail(playId, memberIds, memberName, playSeqNo);
 }
 
-function clickEditPlayDetail(playId, memberIds, memberName, playSeqNo, playDetailId, playDetailGround, playDetailStep, playDetailStartDate, playDetailEndDate, playDetailFalseCount) {    
+function clickEditPlayDetail(playId, memberIds, memberName, playSeqNo, playDetailId, playDetailGround, playDetailStep, playDetailStartDate, playDetailEndDate, playDetailActualTime, playDetailFalseCount) {    
     $("#play-id").val(playId);
     $("#member-id").val(memberIds);
     $("#member-name").val(memberName);
@@ -250,6 +257,7 @@ function clickEditPlayDetail(playId, memberIds, memberName, playSeqNo, playDetai
     $("#play-detail-step").val(playDetailStep);
     $("#play-detail-start-date").val(playDetailStartDate);
     $("#play-detail-end-date").val(playDetailEndDate);
+    $("#play-detail-actual-time").val(playDetailActualTime);
     $("#play-detail-false-count").val(playDetailFalseCount);
 }
 
@@ -270,12 +278,12 @@ function clickSubmitPlayDetail() {
     var playDetailStartDate = $("#play-detail-start-date").val();
     var playDetailEndDate = $("#play-detail-end-date").val();
     var playDetailFalseCount = $("#play-detail-false-count").val();
+    var playActualTime = $("#play-detail-actual-time").val();
 
-    var startDate = new Date(playDetailStartDate);
-    var endDate   = new Date(playDetailEndDate);
-    var actualPlayTime = (endDate.getTime() - startDate.getTime()) / 1000;
-
-    console.log(actualPlayTime);
+    // var startDate = new Date(playDetailStartDate);
+    // var endDate   = new Date(playDetailEndDate);
+    // var actualPlayTime = (endDate.getTime() - startDate.getTime()) / 1000;
+    // console.log(actualPlayTime);
 
     callAPI({
         method: 'POST',
@@ -287,7 +295,7 @@ function clickSubmitPlayDetail() {
             "start_date": playDetailStartDate,
             "end_date": playDetailEndDate,
             "false_count": playDetailFalseCount,
-            "actual_play_time" : actualPlayTime
+            "actual_play_time" : playActualTime
         }
     }).then(function (response) {
         alert(`수정 되었습니다.`);

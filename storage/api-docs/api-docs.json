@@ -373,18 +373,6 @@
                                                     "description": "실패 횟수",
                                                     "type": "integer",
                                                     "example": "1"
-                                                },
-                                                "start_date": {
-                                                    "description": "시작 시간",
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "example": "2024-02-22 11:10:11"
-                                                },
-                                                "end_date": {
-                                                    "description": "종료 시간",
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "example": "2024-02-22 11:20:59"
                                                 }
                                             },
                                             "type": "object"
