@@ -365,7 +365,7 @@
                                                     "example": "1"
                                                 },
                                                 "actual_play_time": {
-                                                    "description": "소요시간",
+                                                    "description": "소요시간(초)",
                                                     "type": "integer",
                                                     "example": "120"
                                                 },

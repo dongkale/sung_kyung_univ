@@ -187,10 +187,6 @@ class PlayController extends Controller
      */
     public function playLogin(Request $request)
     {
-        // 1. request: ids로 로그인
-        // 2. process: members 테이블에서 확인
-        // 3. response: id, name, email, birth_date
-
         $validator = Validator::make($request->all(), [
             "ids" => "required",
         ]);
@@ -299,12 +295,6 @@ class PlayController extends Controller
      */
     public function playStart(Request $request)
     {
-        // 1. request: id
-        // 2. process: members.try_login_at 시간이 5초 안쪽인지 체크
-        // 3. process: members.login_flag, members.last_login_at 업데이트
-        // 4. process: members.play_seq_no 번호 증감
-        // 5. process: plays 테이블 insert
-        // 6. response: play_seq_no
         $validator = Validator::make($request->all(), [
             "id" => "required",
         ]);
@@ -336,10 +326,6 @@ class PlayController extends Controller
                 "result_message" => "Not Login",
             ]);
         }
-
-        // Log::info(
-        //     "[PlayStart][LoginCheck] id: {$memberId}({$member->ids}), name: {$member->name}"
-        // );
 
         DB::beginTransaction();
         try {
@@ -402,7 +388,7 @@ class PlayController extends Controller
      *                  @OA\Items(
      *                      @OA\Property(property="ground", type="string", description="장소(현관,거실,...)", example="거실"),
      *                      @OA\Property(property="step", type="int", description="순서(1,2,3)", example="1"),
-     *                      @OA\Property(property="actual_play_time", type="int", description="소요시간", example="120"),
+     *                      @OA\Property(property="actual_play_time", type="int", description="소요시간(초)", example="120"),
      *                      @OA\Property(property="false_count", type="int", description="실패 횟수", example="1"),
      *                 ),
      *             )
@@ -427,17 +413,6 @@ class PlayController extends Controller
 
     public function playStat(Request $request)
     {
-        // 1. request: ids, play_seq_no, statistics:[{ground, step, actual_play_time, false_count, start_date, end_date}, ...]
-        // 2. process: play_details 테이블 insert
-        // 3. response:
-
-        // {
-        //     "id" : 16,
-        //     "play_seq_no" : 5,
-        //     "play_stat" : [ {"ground":" 거실","step":1,"actual_play_time": 10,"false_count": 0,"start_date": "2021-07-01 10:00:00", "end_date": "2021-07-01 10:00:10"},
-        //                     {"ground":" 거실", "step":2, "actual_play_time": 20, "false_count": 1, "start_date": "2021-07-01 10:00:10", "end_date": "2021-07-01 10:00:30"}]
-        // }
-
         $validator = Validator::make($request->all(), [
             "id" => "required",
             "play_seq_no" => "required",
@@ -572,8 +547,6 @@ class PlayController extends Controller
      */
     public function playEnd(Request $request)
     {
-        // 1. request: id, play_seq_no, start_date, end_date, total_time
-        // 2. process: plays 테이블 update
         $validator = Validator::make($request->all(), [
             "id" => "required",
             "play_seq_no" => "required",
@@ -1071,6 +1044,7 @@ class PlayController extends Controller
                     "pd.play_id IN (SELECT id FROM plays WHERE member_id = {$memberId})"
                 );
             })
+            ->whereNotNULL("pd.ground")
             ->groupBy("pd.ground")
             ->get()
             ->toArray();

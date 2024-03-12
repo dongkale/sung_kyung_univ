@@ -322,10 +322,11 @@ async function chartGroundSuccessFalseCount(drawId, memberId) {
         
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
-            for (let item of result_data.stat) {                  
+            for (let item of result_data.stat) {
+                // var ground = item.ground ? item.ground : 'NONE';
                 successDatas.push(item.success_count);
                 falseDatas.push(item.false_count);
-                categories.push(item.ground);
+                categories.push(item.ground ? item.ground : 'FAIL');                
             }
 
             chart = drawNormalBar(drawId, "", "220px", [{name:'성공', data: successDatas}, {name:'실패', data: falseDatas}], categories);            
