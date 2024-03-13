@@ -130,7 +130,6 @@ class PlayController extends Controller
      *     )
      * )
      */
-
     public function testPost(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -410,7 +409,6 @@ class PlayController extends Controller
      *     )
      * )
      */
-
     public function playStat(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -744,7 +742,10 @@ class PlayController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $playId = $request->play_id;
@@ -902,6 +903,7 @@ class PlayController extends Controller
             ],
         ]);
     }
+
     public function selectPlayCountByMember(Request $request)
     {
         $playCount = DB::table("members as m")

@@ -69,7 +69,11 @@ class MemberController extends Controller
 
         if ($validator->fails()) {
             Log::error("[Member][Add] " . "Not Found Arguments");
-            return view("errors.error", ["errors" => $validator->errors()]);
+            // return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $dbEncKey = env("DB_ENCRYPT_KEY");
@@ -165,7 +169,12 @@ class MemberController extends Controller
 
         if ($validator->fails()) {
             Log::error("[Member][Edit] " . "Not Found Arguments");
-            return view("errors.error", ["errors" => $validator->errors()]);
+
+            // return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $dbEncKey = env("DB_ENCRYPT_KEY");
@@ -256,7 +265,11 @@ class MemberController extends Controller
 
         if ($validator->fails()) {
             Log::error("[Member][Delete] " . "Not Found Arguments");
-            return view("errors.error", ["errors" => $validator->errors()]);
+            // return view("errors.error", ["errors" => $validator->errors()]);
+            return response()->json([
+                "result_code" => -1,
+                "result_message" => $validator->errors(),
+            ]);
         }
 
         $memberIdList = $request->id_list;

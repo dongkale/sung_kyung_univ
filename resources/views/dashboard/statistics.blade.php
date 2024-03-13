@@ -216,7 +216,7 @@ async function chartPlayCountByMember() {
 
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
-            for (let item of result_data.play_count) {                
+            for (let item of result_data.play_count) {
                 datas.push(item.count);
                 categories.push(`${item.name}(${item.ids})`);
             }
@@ -323,7 +323,6 @@ async function chartGroundSuccessFalseCount(drawId, memberId) {
         if (response.result_code == 0) {            
             var result_data = response.result_data; 
             for (let item of result_data.stat) {
-                // var ground = item.ground ? item.ground : 'NONE';
                 successDatas.push(item.success_count);
                 falseDatas.push(item.false_count);
                 categories.push(item.ground ? item.ground : 'FAIL');                
@@ -380,7 +379,7 @@ function drawNormalDonut(draw_id, title, height, datas, categories) {
             text: title,
             align: 'left'
         }, 
-        chart: {            
+        chart: {          
             type: 'donut',
             width: '100%',
             height: height, // '230px',
