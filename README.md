@@ -46,7 +46,7 @@ Connect to `http://localhost:3000`
 
 ## DB Schema
 
-## Surver Apply
+## Server Apply
 
 ```sh
 sudo git pull
@@ -56,7 +56,7 @@ sudo php artisan l5-swagger:generate
 sudo chown -R www-data:www-data *
 ```
 
-## Excel Download 
+## Excel Download
 
 ```sh
 composer require maatwebsite/excel --ignore-platform-reqs

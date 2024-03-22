@@ -175,13 +175,13 @@ function viewMemberListWithStat() {
             for (let item of result_data) {  
                 html += `<tr align="center" style="vertical-align: middle;">`;
                 html += `   <td width="8%">${item.ids}</td>`;
-                html += `   <td>${item.name}</td>`;                
+                html += `   <td>${item.name}</td>`;
                 html += `   <td width="8%">${(item.sex == 'M') ? '남성' : '여성'}</td>`;
                 html += `   <td>${reformatBirthDate(item.birth_date)}</td>`;
                 html += `   <td width="10%">${item.age}</td>`;
                 html += `   <td>${formatPhoneNumber(item.mobile_phone)}</td>`;            
                 html += `   <td>${item.play_count}</td>`;
-                html += `   <td>${item.play_total_time/60} 분</td>`;
+                html += `   <td>${(item.play_total_time/60).toFixed(1)} 분</td>`;
                 html += `   <td>${item.created_at}</td>`;
                 html += `   <td><button type="button" class="btn btn-primary" onclick="clickMemberStatDetail('${item.id}', '${item.m_ids}', '${item.m_name}')">통계</button></td>;`
                 html += `</tr>`;
