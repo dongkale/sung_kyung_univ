@@ -51,7 +51,8 @@ class MembersExcelForList implements
                 ),
                 DB::raw(
                     "(SELECT SUM(total_time) FROM plays WHERE member_id = m.id) / 60 as play_total_time"
-                )
+                ),
+                "m.created_at"
             )
             ->get()
             ->toArray();
