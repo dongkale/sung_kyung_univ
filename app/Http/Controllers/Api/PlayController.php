@@ -261,6 +261,7 @@ class PlayController extends Controller
                 "name" => $selectData->name,
                 "email" => $selectData->email,
                 "birth_date" => $selectData->birth_date,
+                "sex" => $selectData->sex,
             ],
         ]);
     }
