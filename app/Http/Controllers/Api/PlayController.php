@@ -178,7 +178,7 @@ class PlayController extends Controller
      *                      @OA\Property(property="name", type="string", description="회원 이름", example="홍길동"),
      *                      @OA\Property(property="email", type="string", description="회원이메일", example="abc@example.com"),
      *                      @OA\Property(property="birth_date", type="string", description="회원 생년월일", example="1990-01-01"),
-     *                      @OA\Property(property="sex", type="string", description="회원 성별(M/남성,F:여성)", example="M/F"),
+     *                      @OA\Property(property="sex", type="string", description="회원 성별(M:남성,F:여성)", example="M"),
      *                  ),
      *            )
      *         )
