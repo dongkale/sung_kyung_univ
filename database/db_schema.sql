@@ -84,3 +84,83 @@ CREATE TABLE `play_logs` (
     INDEX `IX_play_logs_member_id`(`member_id`) USING BTREE,
     INDEX `IX_play_logs_seq_no`(`seq_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- sung_kyung_univ.password_reset_tokens definition
+
+CREATE TABLE `password_reset_tokens` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- sung_kyung_univ.password_resets definition
+
+CREATE TABLE `password_resets` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  KEY `password_resets_email_index` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- sung_kyung_univ.personal_access_tokens definition
+
+CREATE TABLE `personal_access_tokens` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tokenable_id` bigint unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
+  KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- sung_kyung_univ.users definition
+
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+show tables
+
+select * from `users`
+
+select * from `users` where `id` = 6 limit 1
+
+
+INSERT INTO sung_kyung_univ.users (name,email,email_verified_at,password,remember_token,created_at,updated_at) VALUES
+	 ('이동관','dongkale@naver.com',NULL,'$2y$12$kcDNZxsaEWj9LtD.cmRUOeBTByg7FBcZHs7ZX6eXgOc4perP4.QJS','l824SjuqdMeAFeC6OEBtCMKLFrAGQcxvKsGRV1CQVFxIJjuqfiUP7n4BwfPQ','2024-02-21 14:27:39','2024-02-21 14:27:39'),
+	 ('최현동','hdchoi@lennon.co.kr',NULL,'$2y$12$4yvfJ0m/.kzN9HjAW8wXbeR3VOXcnWyIN06yKck.ze6MZkFfm9M5.','4IBASfzMi7G8Uq6gXXp2jBnDdWBObIOzxKCAOzVACj4Ozf1Z8fmcp1eDr13L','2024-03-06 19:08:22','2024-03-06 19:08:22'),
+	 ('김주아','jooa04@bible.ac.kr',NULL,'$2y$12$pZ/i/QBkPwkZjgqSNBOnYe7ZAnYt.4dg95CBkFhO0Dpxih0wgEgFK','nJA7YVhSmMInjb4wzfNQjnqv8PkkkqejVTuo7KaKluFUYY1hLOJxe6GIRE0x','2024-03-29 16:01:17','2024-03-29 16:01:17'),
+	 ('이동관2','test2@naver.com',NULL,'$2y$12$Nxl.nLQTXOZN8kUYtpb9EuNRJA3nKv6zGKET6b4ztcFNvIH2NC8mS',NULL,'2024-03-29 17:01:24','2024-03-29 22:34:27'),
+	 ('한동현','dhhan@lennon.co.kr',NULL,'$2y$12$6mqBK.7hSRP9F4nYdgTtneEz6yszCsqeKNhTrYDvoXD3NDm6YwnMi',NULL,'2024-04-23 17:57:48','2024-04-23 17:57:48'),
+	 ('이동관3','dongkale@exp.com',NULL,'$2y$12$cFs.rk.RRSf248H3E0O4FOQz00wigl/vHaifxNQXJNMlXTDPuDeS2',NULL,'2024-05-31 12:27:13','2024-05-31 12:27:13');

@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -35,5 +39,25 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware("guest")->except("logout");
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $user = User::where("email", $request->email)->first();
+
+        if (!$user) {
+            $message = "아이디가 존재하지 않습니다.";
+        } else {
+            if (!Hash::check($request->password, $user->password)) {
+                $message = "암호가 틀렸습니다.";
+            } else {
+                $message =
+                    "다른 예기치 않은 오류가 발생했습니다. 관리자에게 문의 하세요";
+            }
+        }
+
+        throw ValidationException::withMessages([
+            $this->username() => [$message],
+        ]);
     }
 }

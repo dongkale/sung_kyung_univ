@@ -245,6 +245,11 @@
                                                         "description": "회원 생년월일",
                                                         "type": "string",
                                                         "example": "1990-01-01"
+                                                    },
+                                                    "sex": {
+                                                        "description": "회원 성별(M/남성,F:여성)",
+                                                        "type": "string",
+                                                        "example": "M/F"
                                                     }
                                                 },
                                                 "type": "object"
