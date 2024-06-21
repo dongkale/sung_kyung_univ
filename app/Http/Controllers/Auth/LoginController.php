@@ -46,10 +46,10 @@ class LoginController extends Controller
         $user = User::where("email", $request->email)->first();
 
         if (!$user) {
-            $message = "아이디가 존재하지 않습니다.";
+            $message = "아이디 없음";
         } else {
             if (!Hash::check($request->password, $user->password)) {
-                $message = "암호가 틀렸습니다.";
+                $message = "비밀번호 틀림";
             } else {
                 $message =
                     "다른 예기치 않은 오류가 발생했습니다. 관리자에게 문의 하세요";
