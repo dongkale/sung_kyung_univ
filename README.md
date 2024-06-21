@@ -48,6 +48,8 @@ Connect to `http://localhost:3000`
 
 ## Server Apply
 
+-- gitpull.sh
+
 ```sh
 sudo git pull
 sudo npm run dev
@@ -133,7 +135,7 @@ FLUSH PRIVILEGES;
 15. 소스 다운로드
 git clone https://github.com/dongkale/lennon_api.git
 
-16. laravel, nmpm  설치
+16. laravel, npm  설치
 sudo chown -R www-data:www-data *
 
 sudo composer install --ignore-platform-req=ext-gd
