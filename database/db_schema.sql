@@ -163,3 +163,6 @@ INSERT INTO sung_kyung_univ.users (name,email,email_verified_at,password,remembe
 	 ('이동관2','test2@naver.com',NULL,'$2y$12$Nxl.nLQTXOZN8kUYtpb9EuNRJA3nKv6zGKET6b4ztcFNvIH2NC8mS',NULL,'2024-03-29 17:01:24','2024-03-29 22:34:27'),
 	 ('한동현','dhhan@lennon.co.kr',NULL,'$2y$12$6mqBK.7hSRP9F4nYdgTtneEz6yszCsqeKNhTrYDvoXD3NDm6YwnMi',NULL,'2024-04-23 17:57:48','2024-04-23 17:57:48'),
 	 ('이동관3','dongkale@exp.com',NULL,'$2y$12$cFs.rk.RRSf248H3E0O4FOQz00wigl/vHaifxNQXJNMlXTDPuDeS2',NULL,'2024-05-31 12:27:13','2024-05-31 12:27:13');
+
+INSERT INTO sung_kyung_univ.members (ids,email,name,sex,birth_date,mobile_phone,play_seq_no,login_flag,try_login_at,last_login_at,created_at,updated_at) VALUES
+	 ('016','DA5F6D315B7DC6C36B8D330F1EC4CDC3','16번유저','F','19600101','40EEBD74DD26D436172B4F0D7E75316D',383,1,'2024-06-21 18:47:27','2024-06-21 13:06:41','2024-02-23 11:58:45','2024-06-21 18:47:27');
