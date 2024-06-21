@@ -10,11 +10,11 @@
             @endif
 
             @if (Route::has('register'))
-            <div class="mr-3">
-                <a href="{{ route('register') }}">{{ __('가입') }}</a>                
-            </div>
+            {{-- <div class="mr-3">
+                <a href="{{ route('register') }}">{{ __('가입') }}</a>
+            </div> --}}
             @endif
-        @else    
+        @else
            <div class="dropdown">
                 <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
                     {{ Auth::user()->name }}

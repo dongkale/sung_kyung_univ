@@ -156,7 +156,6 @@ select * from `users`
 
 select * from `users` where `id` = 6 limit 1
 
-
 INSERT INTO sung_kyung_univ.users (name,email,email_verified_at,password,remember_token,created_at,updated_at) VALUES
 	 ('이동관','dongkale@naver.com',NULL,'$2y$12$kcDNZxsaEWj9LtD.cmRUOeBTByg7FBcZHs7ZX6eXgOc4perP4.QJS','l824SjuqdMeAFeC6OEBtCMKLFrAGQcxvKsGRV1CQVFxIJjuqfiUP7n4BwfPQ','2024-02-21 14:27:39','2024-02-21 14:27:39'),
 	 ('최현동','hdchoi@lennon.co.kr',NULL,'$2y$12$4yvfJ0m/.kzN9HjAW8wXbeR3VOXcnWyIN06yKck.ze6MZkFfm9M5.','4IBASfzMi7G8Uq6gXXp2jBnDdWBObIOzxKCAOzVACj4Ozf1Z8fmcp1eDr13L','2024-03-06 19:08:22','2024-03-06 19:08:22'),
